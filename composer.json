@@ -1,0 +1,21 @@
+{
+    "name": "elitelib/persistence",
+    "description": "libreria de persistencia",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Elitelib\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mariano Meissner",
+            "email": "marianome@gmail.com",
+            "role":"Dev"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.20"
+    }
+}

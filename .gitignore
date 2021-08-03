@@ -1,0 +1,10 @@
+.settings
+.settings/
+.settings/*
+.buildpath
+.project
+.idea/
+config.ini
+config.php
+composer.phar
+/vendor/
