@@ -6,7 +6,7 @@ class Hello{
 
     public function sayHello($message){
 
-        echo "hello $message";
+        echo "hello $message\n";
     }
 
 }
