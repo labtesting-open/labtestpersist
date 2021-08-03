@@ -9,4 +9,8 @@ class Hello{
         return "hello $message\n";
     }
 
+    public function sayGoodby($message){
+        return "goodby $message\n";
+    }
+
 }
