@@ -1,0 +1,10 @@
+{
+    "conexion":{
+        "server":"localhost",
+        "user":"root",
+        "password":"",
+        "database":"elites17_wizard",
+        "port":"3306"
+    }
+}
+

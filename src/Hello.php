@@ -2,15 +2,16 @@
 
 namespace Elitelib;
 
-class Hello{
+class Hello
+{
 
-    public function sayHello($message){
-
+    public function sayHello($message)
+    {
         return "hello $message\n";
     }
 
-    public function sayGoodby($message){
+    public function sayGoodby($message)
+    {
         return "goodby $message\n";
     }
-
 }

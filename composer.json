@@ -5,9 +5,9 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Elitelib\\": "src/"
+            "Elitelib\\": "src/models"
         }
-    },
+    },    
     "authors": [
         {
             "name": "Mariano Meissner",
@@ -16,7 +16,8 @@
         }
     ],
     "require": {
-        "php": ">=5.6.20"
+        "php": ">=5.6.20",
+        "phpunit/phpunit": "9.5.0"
     },
     "minimum-stability": "dev"
 }
