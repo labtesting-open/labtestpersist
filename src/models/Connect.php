@@ -107,7 +107,7 @@ class Connect{
 
 
     //encriptar
-    protected function encriptar($string){
+    public function encriptar($string){
         return md5($string);
     }
 
