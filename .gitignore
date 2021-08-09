@@ -6,5 +6,5 @@
 .phpunit.result.cache
 config.ini
 config.php
-composer.phar
 /vendor/
+/test/

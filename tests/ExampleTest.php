@@ -26,24 +26,24 @@ class ExampleTest extends TestCase
     //     $this->expectException(InvalidArgumentException::class);
     // }
 
-    public function testSubtract()
-    {
-        $result = $this->op->subtract(20, 5);
-        $this->assertEquals(15, $result);
-    }
+    // public function testSubtract()
+    // {
+    //     $result = $this->op->subtract(20, 5);
+    //     $this->assertEquals(15, $result);
+    // }
 
-    public function testMultiply()
-    {
-        $result = $this->op->multiply(20, 5);
-        $this->assertEquals(100, $result);
-    }
+    // public function testMultiply()
+    // {
+    //     $result = $this->op->multiply(20, 5);
+    //     $this->assertEquals(100, $result);
+    // }
 
 
-    public function testDiv()
-    {
-        $result = $this->op->divide(20, 5);
-        $this->assertEquals(4, $result);
-    }
+    // public function testDiv()
+    // {
+    //     $result = $this->op->divide(20, 5);
+    //     $this->assertEquals(4, $result);
+    // }
 
     // public function testDivZero()
     // {
