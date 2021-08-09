@@ -4,7 +4,9 @@
 
     class Team extends Connect{
        
-        private $folder_team ="imgs/teams_profile/";      
+        private $folder_team ="imgs/teams_profile/";   
+        private $path_flag ="imgs/svg/";
+        private $folder_club ="imgs/clubs_logo/";   
 
 
         public function getTeams($club_id, $country_code = null){
@@ -112,6 +114,101 @@
             
             return $datos;
         }
+
+
+        public function getTeamsByFilters(
+            $continent_code, 
+            $country_code, 
+            $category_id,
+            $division_id,
+            $page = 1,
+            $cant = 100,
+            $order,
+            $order_sense,
+            $translate_code ='GB'
+            ){  
+
+            $db = parent::getDataBase();
+
+            $init = 0;            
+
+            if($page > 1){                
+                 $init = ($cant * ($page - 1)) + 1 ;
+                 $cant = $cant * $page;
+            } 
+            
+            $where='';            
+
+            if($continent_code != null){
+                $where.= "WHERE countries.continent_code='$continent_code'";                   
+            }
+
+            if($country_code != null){                
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "countries.country_code='$country_code'";                    
+            }     
+
+            if($category_id != null){
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "teams.category_id=$category_id";                    
+            }    
+            
+            if($division_id != null){
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "teams.division_id=$division_id";                    
+            }  
+
+
+            switch ($order) {
+                
+                case 'club_name':
+                    $orderfields ="clubs.name";
+                    break;
+                case 'squad':
+                    $orderfields ="squad";
+                    break;
+                default:
+                    $orderfields ="teams.id";
+            }            
+
+            $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
+            
+            $query ="
+            SELECT 
+            teams.id AS team_id,
+            clubs.id AS club_id,
+            IFNULL(clases.name,clubs.name) AS team_name,            
+            clubs.name AS club_name,            
+            IF( ISNULL(clubs.logo), null,CONCAT('$this->folder_club', clubs.logo)) AS logo, 
+            categories.name AS category_name,
+            divisions.name AS division_name,
+            CONCAT(countries.name) AS country_name,
+            CONCAT('$this->path_flag',countries.country_code,'.svg') AS country_flag,
+            COALESCE(players_count, 0) AS squad
+            FROM elites17_wizard.teams teams
+            INNER JOIN  elites17_wizard.clubs clubs ON clubs.id = teams.club_id
+            INNER JOIN  elites17_wizard.categories categories ON categories.id = teams.category_id
+            INNER JOIN  elites17_wizard.division divisions ON divisions.id = teams.division_id
+            INNER JOIN  elites17_wizard.country_codes countries ON countries.country_code = clubs.country_code
+            LEFT JOIN  elites17_wizard.division_class_translate clases 
+            ON clases.id = divisions.division_class_id and clases.country_code='$translate_code'
+            LEFT JOIN (
+            SELECT   
+            players.team_id AS team_id
+            ,COUNT(players.id) AS players_count		
+            FROM  elites17_wizard.players players   
+            GROUP by players.team_id
+            ) AS plantilla ON plantilla.team_id = teams.id      
+            $where
+            ORDER BY $orderfields $sense
+            limit $init,$cant
+            ";    
+
+            $datos = parent::obtenerDatos($query);           
+
+            return $datos;
+
+        }    
 
 
 
