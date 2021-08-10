@@ -481,7 +481,7 @@
         }
 
 
-        private function getActionIdList($category_id){          
+        public function getActionIdList($category_id){          
 
             switch ($category_id) {
                 case 1://goalkeeper
