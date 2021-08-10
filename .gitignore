@@ -8,3 +8,4 @@ config.ini
 config.php
 /vendor/
 /test/
+.phpunit.xml
