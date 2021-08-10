@@ -374,7 +374,7 @@
 
 
 
-        private function getPlayerPerfil($player_id, $language_id){
+        public function getPlayerPerfil($player_id, $language_id){
 
             $db = parent::getDataBase(); 
 
@@ -422,7 +422,7 @@
         }
 
 
-        private function getSecondaryPositions($player_id, $language_id){
+        public function getSecondaryPositions($player_id, $language_id){
 
             $db = parent::getDataBase(); 
 
@@ -441,7 +441,7 @@
         }
 
 
-        private function getInjuriesHistory($player_id, $language_id){
+        public function getInjuriesHistory($player_id, $language_id){
 
             $db = parent::getDataBase(); 
 
@@ -465,7 +465,7 @@
 
         
         
-        private function getPosition_id($player_id){
+        public function getPosition_id($player_id){
 
             $db = parent::getDataBase(); 
 
@@ -504,7 +504,7 @@
         }      
 
 
-        private function getCategoriesByLanguage($language_id){          
+        public function getCategoriesByLanguage($language_id){          
 
            
            $db = parent::getDataBase(); 
@@ -524,7 +524,7 @@
 
 
 
-        private function getActionListName($category_id){          
+        public function getActionListName($category_id){          
 
             switch ($category_id) {
 
@@ -545,7 +545,7 @@
         }
 
 
-        private function getActionNameList($actionIdList, $language_id){
+        public function getActionNameList($actionIdList, $language_id){
 
             $db = parent::getDataBase(); 
 
