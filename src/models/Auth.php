@@ -4,18 +4,18 @@
     class Auth extends Connect{
 
         
-        public function obtenerDatosUsuario($correo){
+        public function getUserDataByUserName($userName){
 
             $db = parent::getDataBase();
     
-            $query = "SELECT id, user_id, password, active FROM $db.users WHERE user_id='$correo'";
-            $datos = parent::obtenerDatos($query);
-    
-            if(isset($datos[0]['id'])){
-                return $datos;
-            }else{
-                return 0;
-            }
+            $query = "SELECT id, user_id, password, active FROM $db.users WHERE user_id='$userName'";
+            $datos = parent::obtenerDatos($query);            
+
+             if(isset($datos[0]['id'])){
+                 return $datos;
+             }else{
+                 return 0;
+             }
         }
     
     
@@ -26,11 +26,10 @@
             $token = bin2hex(openssl_random_pseudo_bytes(16,$val));
             $date = date("Y-m-d H:i");
             $estado = 1;
-            $query = "INSERT INTO $db.user_token(user_id, token, mode, date_time)values($userId,'$token', $estado, '$date')";       
-    
+            $query = "INSERT INTO $db.user_token(user_id, token, mode, date_time)values($userId,'$token', $estado, '$date')";             
             
-            $verifica = parent::nonQuery($query);
-    
+            $verifica = parent::nonQuery($query);             
+
             if($verifica){
                 return $token;
             }else{
@@ -43,7 +42,8 @@
     
             $db = parent::getDataBase();
     
-            $query = "SELECT id, mode FROM $db.user_token WHERE token='$token'";
+            $query = "SELECT id, mode FROM $db.user_token WHERE token='$token'";           
+           
             $datos = parent::obtenerDatos($query);
     
             if(isset($datos[0]['id'])){
@@ -52,20 +52,21 @@
                 return 0;
             }
     
+
         }
     
         public function disableToken($id){
     
             $db = parent::getDataBase();
-            $val = true;               
+                          
             $query = "UPDATE $db.user_token SET mode = 0 WHERE id=$id";       
-            
+                        
             $update = parent::nonQuery($query);
     
             if($update){
-                return 1;
+                 return 1;
             }else{
-                return 0;
+                 return 0;
             }
     
         }
