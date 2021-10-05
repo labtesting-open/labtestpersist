@@ -14,7 +14,7 @@ class AuthTest extends TestCase{
     protected function setUp(): void
     {
         $this->auth_model = new Elitelib\Auth();
-        $this->user = 'elitesports17';        
+        $this->user = 'admin@wizard.com';        
     }
 
     public function test_getUserAndGenerateNewToken()

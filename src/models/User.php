@@ -54,9 +54,10 @@
             u.name,
             u.surname,
             u.plan_id,
-            p.name as plan_name,
-            CONCAT('$this->user_path',u.id,'/',u.img_perfil_url) AS img_perfil_url,
-           
+            p.name as plan_name,           
+            IF( ISNULL(u.img_perfil_url), null,
+				CONCAT('$this->user_path',u.id,'/',u.img_perfil_url)
+            ) AS img_perfil_url,           
             IF(u.active=1,'true','false') as active          
             FROM $db.$this->table u 
             LEFT OUTER JOIN $db.plans p ON u.plan_id = p.id 
