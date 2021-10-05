@@ -22,10 +22,10 @@ class AuthTest extends TestCase{
 
         $data_user = $this->auth_model->getUserDataByUserName($this->user);
         $user_id = $data_user[0]['id'];
-        var_dump($data_user);
+        //var_dump($data_user);
 
         $token = $this->auth_model->insertarToken($user_id);        
-        var_dump($token);
+        //var_dump($token);
 
         $this->assertFalse(empty($token));      
 
@@ -39,7 +39,7 @@ class AuthTest extends TestCase{
         $token = $this->auth_model->insertarToken($user_id); 
 
         $data_user_token = $this->auth_model->getUserToken($token); 
-        var_dump($data_user_token);
+        //var_dump($data_user_token);
 
         $this->assertFalse(empty($data_user_token)); 
       
