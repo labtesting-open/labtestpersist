@@ -3,6 +3,11 @@
 
     class Auth extends Connect{
 
+        function __construct($dataConnection = null)
+        {
+            parent::__construct($dataConnection);
+        }
+
         
         public function getUserDataByUserName($userName){
 

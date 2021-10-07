@@ -13,10 +13,13 @@ class Connect{
     private $port;
 
 
-    function __construct(){
-        $listados = $this->datosConexion();
+    function __construct( $dataConnection = null){
 
-        foreach($listados as $key=>$value){
+        if(!isset($dataConnection)){
+            $dataConnection = $this->getDataConnectionFromFile();
+        }
+        
+        foreach($dataConnection as $key=>$value){
             $this->server   = $value['server'];
             $this->user     = $value['user'];
             $this->password = $value['password'];
@@ -49,7 +52,7 @@ class Connect{
 
 
 
-    private function datosConexion(){
+    private function getDataConnectionFromFile(){
         $direccion = dirname(__FILE__);
         $jsonData = file_get_contents($direccion."/"."config");
         return json_decode($jsonData, true);

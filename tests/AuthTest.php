@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
 
 use function PHPUnit\Framework\isNull;
@@ -12,8 +13,11 @@ class AuthTest extends TestCase{
     public $auth_model;   
 
     protected function setUp(): void
-    {
-        $this->auth_model = new Elitelib\Auth();
+    { 
+        $host = new HostConnection();
+
+        $this->auth_model = new Elitelib\Auth($host->getParams());        
+
         $this->user = 'admin@wizard.com';        
     }
 
