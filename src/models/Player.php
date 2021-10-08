@@ -263,15 +263,14 @@
 
         }  
 
-        public function findPlayers($find, $language_code, $page = 1){  
+        public function findPlayers($find, $language_code, $page = 1, $limit= 100){  
 
             $db = parent::getDataBase();
-            $inicio = 0;
-            $cantidad = 100;
+            $init = 0;            
 
             if($page > 1){                
-                $inicio = ($cantidad * ($page - 1)) + 1 ;
-                $cantidad = $cantidad * $page;
+                $init = ($limit * ($page - 1)) + 1 ;
+                $limit = $limit * $page;
             }
 
             $findScape = parent::scapeParameter($find);
@@ -305,7 +304,7 @@
             ) nacionalities ON nacionalities.player_id = players.id
 
             WHERE (LOWER(players.name) like LOWER('%$findScape%')) OR (LOWER(players.surname) like LOWER('%$findScape%')) 
-            limit $inicio,$cantidad" ;        
+            limit $init,$limit" ;        
 
             $datos = parent::obtenerDatos($query);           
 
