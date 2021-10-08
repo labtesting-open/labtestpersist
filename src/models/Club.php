@@ -106,15 +106,15 @@
         }      
        
 
-        public function findClubs($find, $language_code, $page = 1){  
+        public function findClubs($find, $language_code, $page = 1, $limit=100){  
 
             $db = parent::getDataBase();
-            $inicio = 0;
-            $cantidad = 100;
+            $init = 0;
+            
 
             if($page > 1){                
-                $inicio = ($cantidad * ($page - 1)) + 1 ;
-                $cantidad = $cantidad * $page;
+                $init = ($limit * ($page - 1)) + 1 ;
+                $limit = $limit * $page;
             }
 
             $findScape = parent::scapeParameter($find);
@@ -132,7 +132,7 @@
             LEFT JOIN $db.country_codes countries
 			ON countries.country_code = clubs.country_code
             WHERE LOWER(clubs.name) like LOWER('%$findScape%')            
-            limit $inicio,$cantidad" ;        
+            limit $init,$limit" ;        
 
             $datos = parent::obtenerDatos($query);           
 
