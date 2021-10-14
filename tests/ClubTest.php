@@ -7,16 +7,37 @@ use PHPUnit\Framework\TestCase;
 
 class ClubTest extends TestCase{
 
-    private $op;
+    private $club;
 
     public function setUp(): void
     {
-        $this->op = new Elitelib\Club();
+        $this->club = new Elitelib\Club();
     }
 
-    public function testAdd()
-    {       
-        $this->assertEquals(25, 25);
+    public function testGetAvailableClubs(){
+
+        $continent_code='SA'; 
+        $country_code = null; 
+        $category_id = null;
+        $division_id = null;
+        $club_id = 1;
+        $orderField = 'clubs.name';
+        $orderSense = 'ASC';
+
+        $data_club = $this->club->getAvailableClubs(
+            $continent_code, 
+            $country_code, 
+            $category_id,
+            $division_id,
+            $club_id,
+            $orderField,
+            $orderSense
+        );
+        
+        //var_dump($data_club);
+
+        $this->assertFalse(empty($data_club)); 
+      
     }
 
 

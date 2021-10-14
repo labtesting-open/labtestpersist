@@ -561,6 +561,41 @@
             return $datos;
 
         }
+
+
+        public function getAvailableNationalities(
+            $continent_code=null, 
+            $country_code = null, 
+            $category_id = null,
+            $division_id = null,
+            $club_id = null,
+            $nacionality_code = NULL, 
+            $orderField = 'nacionalities.country_code',
+            $orderSense = 'ASC'
+        )
+        {
+            $db = parent::getDataBase();     
+            
+            $where = "";
+
+            if($nacionality_code != null){
+                $where.=' WHERE ';                
+                $where.= " nacionalities.country_code = '$nacionality_code'";
+            }
+
+            $query = "
+            SELECT 
+            id,
+            country_code 
+            FROM $db.players_nacionalities nacionalities
+            $where
+            GROUP BY nacionalities.country_code
+            ORDER BY $orderField $orderSense";        
+
+            $datos = parent::obtenerDatos($query);           
+ 
+            return $datos;
+        }
        
 
 
