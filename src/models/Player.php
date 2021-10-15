@@ -620,12 +620,9 @@
 
 
             $query = "
-            SELECT
-            players.id,
-            players.name,
-            players.surname,
-            clubs.name,
+            SELECT           
             nacionalities.country_code,
+            clubs.country_name,
             CONCAT('$this->path_flag',nacionalities.country_code,'.svg') AS country_flags
             FROM  $db.players players
             INNER JOIN (
@@ -633,7 +630,8 @@
                 clubs.id,
                 clubs.name,
                 teams.category_id,
-                teams.division_id          
+                teams.division_id,
+                countries.name AS country_name     
                 FROM  $db.clubs clubs
                 INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
                 LEFT JOIN (
