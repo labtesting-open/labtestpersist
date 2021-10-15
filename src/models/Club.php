@@ -466,9 +466,9 @@
             GROUP BY players.club_id
             ORDER BY $order $sense";        
 
-            //$datos = parent::obtenerDatos($query);           
+            $datos = parent::obtenerDatos($query);           
  
-            return $query;
+            return $datos;
 
         }      
 
