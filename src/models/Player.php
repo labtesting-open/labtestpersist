@@ -623,7 +623,7 @@
             SELECT  
             nacionalities.country_code,
             nacionalities.country_name,
-            CONCAT('folder/',nacionalities.country_code,'.svg') AS country_flags
+            CONCAT('$this->path_flag',nacionalities.country_code,'.svg') AS country_flags
             FROM  $db.players players
             INNER JOIN (
                 SELECT
