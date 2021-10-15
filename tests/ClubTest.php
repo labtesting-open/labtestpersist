@@ -20,9 +20,10 @@ class ClubTest extends TestCase{
         $country_code = null; 
         $category_id = null;
         $division_id = null;
-        $club_id = 1;
-        $orderField = 'clubs.name';
-        $orderSense = 'ASC';
+        $club_id = null;
+        $nacionality_code = null;
+        $orderField = null;
+        $orderSense = null;
 
         $data_club = $this->club->getAvailableClubs(
             $continent_code, 
@@ -30,11 +31,12 @@ class ClubTest extends TestCase{
             $category_id,
             $division_id,
             $club_id,
+            $nacionality_code,
             $orderField,
             $orderSense
         );
         
-        //var_dump($data_club);
+        var_dump($data_club);
 
         $this->assertFalse(empty($data_club)); 
       

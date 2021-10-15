@@ -378,39 +378,47 @@
             $category_id = null,
             $division_id = null,
             $club_id = null,
+            $nacionality_code = null, 
             $orderField = null,
             $orderSense = null
         ){
             
             $db = parent::getDataBase();  
             
-            $where = "";
+            $whereSubQuery="";
 
             if($continent_code != null){
-                $where.=' WHERE ';                
-                $where.= " countries.continent_code = '$continent_code'";
+                $whereSubQuery.=' WHERE ';                
+                $whereSubQuery.= " countries.continent_code = '$continent_code'";
             }
 
             if($country_code != null){
-                $where.=(empty($where))?' WHERE ':' and ';
-                $where.= " countries.country_code = '$country_code'";
+                $whereSubQuery.=(empty($whereSubQuery))?' WHERE ':' and ';
+                $whereSubQuery.= " countries.country_code = '$country_code'";
             }
 
             if($category_id != null){
-                $where.=(empty($where))?' WHERE ':' and ';
-                $where.= " teams.category_id = $category_id";
+                $whereSubQuery.=(empty($whereSubQuery))?' WHERE ':' and ';
+                $whereSubQuery.= " teams.category_id = $category_id";
             }           
 
             if($division_id != null){
-                $where.=(empty($where))?' WHERE ':' and ';
-                $where.= " teams.division_id = $division_id";
+                $whereSubQuery.=(empty($whereSubQuery))?' WHERE ':' and ';
+                $whereSubQuery.= " teams.division_id = $division_id";
             }
 
             if($club_id != null){
-                $where.=(empty($where))?' WHERE ':' and ';
-                $where.= " clubs.id = $club_id";
+                $whereSubQuery.=(empty($whereSubQuery))?' WHERE ':' and ';
+                $whereSubQuery.= " clubs.id = $club_id";
             }  
             
+            $where = "";
+
+            if($nacionality_code != null){
+                $where.=' WHERE ';                
+                $where.= " nacionalities.country_code = '$nacionality_code'";
+            }           
+
             $order = 'clubs.name';
 
             if($orderField != null){
@@ -419,29 +427,48 @@
             
             $sense = (isset($orderSense) && $orderSense !='ASC')?'DESC':'ASC';
 
+
             $query = "
             SELECT
-            clubs.id,
+            clubs.id,            
             clubs.name,
-            teams.category_id,
-            teams.division_id          
-            FROM  $db.clubs clubs
-            INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
-             LEFT JOIN (
-                SELECT   
-                teams.club_id AS club_id,
+            CONCAT('$this->folder_club', clubs.logo) AS logo
+            FROM  $db.players players
+            INNER JOIN (
+                SELECT
+                clubs.id,
+                clubs.name,
+                clubs.logo,
                 teams.category_id,
-                teams.division_id
-                FROM  $db.teams teams 
-            )AS teams ON teams.club_id = clubs.id
+                teams.division_id    
+                FROM  $db.clubs clubs
+                INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
+                LEFT JOIN (
+                    SELECT   
+                    teams.club_id AS club_id,
+                    teams.category_id,
+                    teams.division_id
+                    FROM  $db.teams teams 
+                )AS teams ON teams.club_id = clubs.id
+                $whereSubQuery
+                GROUP BY clubs.id
+            ) AS clubs ON clubs.id = players.club_id
+            LEFT JOIN (
+            SELECT 
+            nacionalities.player_id,
+            nacionalities.country_code ,
+            country_codes.name
+            FROM $db.players_nacionalities nacionalities 
+            LEFT JOIN $db.country_codes country_codes 
+            ON country_codes.country_code = nacionalities.country_code
+            ) AS nacionalities ON nacionalities.player_id = players.id
             $where
-            GROUP BY clubs.id
-            ORDER BY $order $sense
-            " ;
+            GROUP BY players.club_id
+            ORDER BY $order $sense";        
 
-            $datos = parent::obtenerDatos($query);           
-
-            return $datos;
+            //$datos = parent::obtenerDatos($query);           
+ 
+            return $query;
 
         }      
 
