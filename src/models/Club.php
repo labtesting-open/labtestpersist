@@ -378,8 +378,8 @@
             $category_id = null,
             $division_id = null,
             $club_id = null,
-            $orderField = 'clubs.name',
-            $orderSense = 'ASC'
+            $orderField = null,
+            $orderSense = null
         ){
             
             $db = parent::getDataBase();  
@@ -409,7 +409,15 @@
             if($club_id != null){
                 $where.=(empty($where))?' WHERE ':' and ';
                 $where.= " clubs.id = $club_id";
-            }            
+            }  
+            
+            $order = 'clubs.name';
+
+            if($orderField != null){
+                $order = $orderField;
+            }
+            
+            $sense = (isset($orderSense) && $orderSense !='ASC')?'DESC':'ASC';
 
             $query = "
             SELECT
@@ -417,7 +425,7 @@
             clubs.name,
             teams.category_id,
             teams.division_id          
-            FROM  elites17_wizard.clubs clubs
+            FROM  $db.clubs clubs
             INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
              LEFT JOIN (
                 SELECT   
@@ -428,7 +436,7 @@
             )AS teams ON teams.club_id = clubs.id
             $where
             GROUP BY clubs.id
-            ORDER BY $orderField $orderSense
+            ORDER BY $order $sense
             " ;
 
             $datos = parent::obtenerDatos($query);           

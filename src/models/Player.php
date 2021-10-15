@@ -569,28 +569,95 @@
             $category_id = null,
             $division_id = null,
             $club_id = null,
-            $nacionality_code = NULL, 
-            $orderField = 'nacionalities.country_code',
-            $orderSense = 'ASC'
+            $nacionality_code = null, 
+            $orderField = null,
+            $orderSense = null
         )
         {
-            $db = parent::getDataBase();     
+            $db = parent::getDataBase();   
+            
+            $whereSubQuery="";
+
+            if($continent_code != null){
+                $whereSubQuery.=' WHERE ';                
+                $whereSubQuery.= " countries.continent_code = '$continent_code'";
+            }
+
+            if($country_code != null){
+                $whereSubQuery.=(empty($whereSubQuery))?' WHERE ':' and ';
+                $whereSubQuery.= " countries.country_code = '$country_code'";
+            }
+
+            if($category_id != null){
+                $whereSubQuery.=(empty($whereSubQuery))?' WHERE ':' and ';
+                $whereSubQuery.= " teams.category_id = $category_id";
+            }           
+
+            if($division_id != null){
+                $whereSubQuery.=(empty($whereSubQuery))?' WHERE ':' and ';
+                $whereSubQuery.= " teams.division_id = $division_id";
+            }
+
+            if($club_id != null){
+                $whereSubQuery.=(empty($whereSubQuery))?' WHERE ':' and ';
+                $whereSubQuery.= " clubs.id = $club_id";
+            }  
             
             $where = "";
 
             if($nacionality_code != null){
                 $where.=' WHERE ';                
                 $where.= " nacionalities.country_code = '$nacionality_code'";
+            }           
+
+            $order = 'nacionalities.country_code';
+
+            if($orderField != null){
+                $order = $orderField;
             }
+            
+            $sense = (isset($orderSense) && $orderSense !='ASC')?'DESC':'ASC';
+
 
             $query = "
+            SELECT
+            players.id,
+            players.name,
+            players.surname,
+            clubs.name,
+            nacionalities.country_code,
+            CONCAT('$this->path_flag',nacionalities.country_code,'.svg') AS country_flags
+            FROM  $db.players players
+            INNER JOIN (
+                SELECT
+                clubs.id,
+                clubs.name,
+                teams.category_id,
+                teams.division_id          
+                FROM  $db.clubs clubs
+                INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
+                LEFT JOIN (
+                    SELECT   
+                    teams.club_id AS club_id,
+                    teams.category_id,
+                    teams.division_id
+                    FROM  $db.teams teams 
+                )AS teams ON teams.club_id = clubs.id
+                $whereSubQuery
+                GROUP BY clubs.id
+            ) AS clubs ON clubs.id = players.club_id
+            LEFT JOIN (
             SELECT 
-            id,
-            country_code 
-            FROM $db.players_nacionalities nacionalities
+            nacionalities.player_id,
+            nacionalities.country_code ,
+            country_codes.name
+            FROM $db.players_nacionalities nacionalities 
+            LEFT JOIN $db.country_codes country_codes 
+            ON country_codes.country_code = nacionalities.country_code
+            ) AS nacionalities ON nacionalities.player_id = players.id
             $where
             GROUP BY nacionalities.country_code
-            ORDER BY $orderField $orderSense";        
+            ORDER BY $order $sense";        
 
             $datos = parent::obtenerDatos($query);           
  

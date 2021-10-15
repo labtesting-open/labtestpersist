@@ -36,9 +36,9 @@ class PlayerTest extends TestCase{
             $orderSense
         );
         
-        //var_dump($dataFilters);
+        var_dump($dataFilters);
 
-        $this->assertFalse(empty($data_club)); 
+        $this->assertFalse(empty($dataFilters)); 
       
     }
 
