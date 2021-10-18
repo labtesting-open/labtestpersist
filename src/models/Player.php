@@ -663,16 +663,57 @@
         }
 
 
-        public function getAvailablePositions(
+        public function getAllPositions(           
+            $position_id = null,
+            $orderField = null,
+            $orderSense = null,
+            $language_code = null 
+        )
+        {
+            $where = "";
+
+            if($position_id != null){
+                $where.=' WHERE ';                
+                $where.= " positions.id = $position_id";
+            }
+
+            $language = (isset($language_code) && $language_code != null)? $language_code: 'GB';
+           
+            $order = 'positions.id';
+
+            if($orderField != null){
+                $order = $orderField;
+            }
+            
+            $sense = (isset($orderSense) && $orderSense !='ASC')?'DESC':'ASC';
+
+
+            $query = "
+            SELECT
+            positions.id AS position_id,
+            position_translate.name AS position_name
+            FROM elites17_wizard.positions positions
+            LEFT JOIN elites17_wizard.position_translate 
+            ON position_translate.id = positions.id AND position_translate.country_code = '$language'
+            $where            
+            ORDER BY $order $sense";        
+
+            $datos = parent::obtenerDatos($query);           
+ 
+            return $datos;
+        }
+
+        
+        public function getAvailablePlayers(
             $continent_code=null, 
             $country_code = null, 
             $category_id = null,
             $division_id = null,
             $club_id = null,
-            $nacionality_code = null,
-            $position_id = null, 
+            $nacionality_code = null, 
+            $position_id = null,
             $orderField = null,
-            $orderSense = null
+            $orderSense = null            
         )
         {
             $db = parent::getDataBase();   
@@ -709,9 +750,14 @@
             if($nacionality_code != null){
                 $where.=' WHERE ';                
                 $where.= " nacionalities.country_code = '$nacionality_code'";
-            }           
+            }
+            
+            if($position_id != null){
+                $where.=' WHERE ';                
+                $where.= " positions.id = $position_id";
+            }  
 
-            $order = 'nacionalities.country_code';
+            $order = 'players.name, players.surname';
 
             if($orderField != null){
                 $order = $orderField;
@@ -721,47 +767,61 @@
 
 
             $query = "
-            SELECT           
-            nacionalities.country_code,
-            clubs.country_name,
-            CONCAT('$this->path_flag',nacionalities.country_code,'.svg') AS country_flags
+            SELECT  
+            players.id AS player_id,
+            players.name AS player_name,
+            players.surname AS player_surname,
+            nacionalities.country_code AS nationality_code,            
+            CONCAT('$this->path_flag', nacionalities.country_code,'.svg') AS nationality_flag,
+            positions.id AS position_id,
+            positions.name AS position_name,
+            clubs.club_name AS club_name,
+            CONCAT('$this->folder_club', clubs.club_logo) AS club_logo,    
+            clubs.team_name,
+            clubs.division_id,
+            clubs.division_name
             FROM  $db.players players
             INNER JOIN (
                 SELECT
                 clubs.id,
-                clubs.name,
+                clubs.name AS club_name,
+                clubs.logo AS club_logo,
                 teams.category_id,
                 teams.division_id,
-                countries.name AS country_name     
+                teams.team_name,
+                countries.name AS country_name,
+                divisions.name AS division_name 
                 FROM  $db.clubs clubs
                 INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
                 LEFT JOIN (
                     SELECT   
                     teams.club_id AS club_id,
                     teams.category_id,
-                    teams.division_id
+                    teams.division_id,
+                    teams.team_name
                     FROM  $db.teams teams 
                 )AS teams ON teams.club_id = clubs.id
-                $whereSubQuery
+                LEFT JOIN $db.division divisions ON divisions.id = teams.division_id AND divisions.country_code = clubs.country_code
+                $whereSubQuery              
                 GROUP BY clubs.id
             ) AS clubs ON clubs.id = players.club_id
             LEFT JOIN (
             SELECT 
             nacionalities.player_id,
             nacionalities.country_code ,
-            country_codes.name
+            country_codes.name as country_name
             FROM $db.players_nacionalities nacionalities 
             LEFT JOIN $db.country_codes country_codes 
             ON country_codes.country_code = nacionalities.country_code
             ) AS nacionalities ON nacionalities.player_id = players.id
-            $where
-            GROUP BY nacionalities.country_code
+            LEFT JOIN $db.positions positions ON positions.id = players.position_id
+            $where            
             ORDER BY $order $sense";        
 
             $datos = parent::obtenerDatos($query);           
  
             return $datos;
-        }   
+        }
 
 
     }
