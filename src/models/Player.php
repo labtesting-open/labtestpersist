@@ -663,19 +663,13 @@
         }
 
 
-        public function getAllPositions(           
-            $position_id = null,
+        public function getAllPrimaryPositions( 
             $orderField = null,
             $orderSense = null,
             $language_code = null 
         )
         {
-            $where = "";
-
-            if($position_id != null){
-                $where.=' WHERE ';                
-                $where.= " positions.id = $position_id";
-            }
+            $db = parent::getDataBase();           
 
             $language = (isset($language_code) && $language_code != null)? $language_code: 'GB';
            
@@ -687,15 +681,46 @@
             
             $sense = (isset($orderSense) && $orderSense !='ASC')?'DESC':'ASC';
 
-
             $query = "
             SELECT
             positions.id AS position_id,
             position_translate.name AS position_name
             FROM elites17_wizard.positions positions
             LEFT JOIN elites17_wizard.position_translate 
-            ON position_translate.id = positions.id AND position_translate.country_code = '$language'
-            $where            
+            ON position_translate.id = positions.id AND position_translate.country_code = '$language'                        
+            ORDER BY $order $sense";        
+
+            $datos = parent::obtenerDatos($query);           
+ 
+            return $datos;
+        }
+
+
+        public function getAllSecondaryPositions(
+            $orderField = null,
+            $orderSense = null,
+            $language_code = null 
+        )
+        {
+            $db = parent::getDataBase();
+
+            $language = (isset($language_code) && $language_code != null)? $language_code: 'GB';
+           
+            $order = 'position_translate.name';
+
+            if($orderField != null){
+                $order = $orderField;
+            }
+            
+            $sense = (isset($orderSense) && $orderSense !='ASC')?'DESC':'ASC';
+
+
+            $query = "
+            SELECT  
+            position_translate.code,
+            position_translate.name
+            FROM $db.map_position_translate position_translate
+            WHERE translate_code='$language'                        
             ORDER BY $order $sense";        
 
             $datos = parent::obtenerDatos($query);           
