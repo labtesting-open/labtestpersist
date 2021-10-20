@@ -729,16 +729,25 @@
         }
 
         
-        public function getAvailablePlayers(
+        public function getAvailablePlayersWithFilters(
             $continent_code=null, 
             $country_code = null, 
             $category_id = null,
             $division_id = null,
             $club_id = null,
-            $nacionality_code = null, 
+            $nationality_code = null, 
             $position_id = null,
+            $second_positions_codes = null,
+            $age_range = null,
+            $height_range = null,
+            $weight_range = null,
+            $foot = null,
             $orderField = null,
-            $orderSense = null            
+            $orderSense = null,
+            $page = null,
+            $limit = null,
+            $language_code = null
+
         )
         {
             $db = parent::getDataBase();   
@@ -772,15 +781,56 @@
             
             $where = "";
 
-            if($nacionality_code != null){
+            if($nationality_code != null){
                 $where.=' WHERE ';                
-                $where.= " nacionalities.country_code = '$nacionality_code'";
+                $where.= " nacionalities.country_code = '$nationality_code'";
             }
             
             if($position_id != null){
-                $where.=' WHERE ';                
-                $where.= " positions.id = $position_id";
+                $where.=(empty($where))?' WHERE ':' and ';               
+                $where.= " positions.id = $position_id ";
+            }
+
+            if($foot != null){
+                $footCode =($foot != 'R')?0:1;
+                $where.=(empty($where))?' WHERE ':' and ';                
+                $where.= " players.foot_code = $footCode ";
             }  
+
+            if($height_range != null){
+                $heightRange = explode(',', $height_range);
+                if(count($heightRange) > 1){
+                    $where.=(empty($where))?' WHERE ':' and ';                
+                    $where.= " players.height BETWEEN $heightRange[0] AND $heightRange[1] ";
+                }
+            }
+
+            if($weight_range != null){
+                $weightRange = explode(',', $weight_range);
+                if(count($weightRange) > 1){
+                    $where.=(empty($where))?' WHERE ':' and ';                
+                    $where.= " players.height BETWEEN $weightRange[0] AND $weightRange[1] ";
+                }
+            }
+
+            if($age_range != null){
+                $ageRange = explode(',', $age_range);
+                if(count($ageRange) > 1){
+                    $where.=(empty($where))?' WHERE ':' and ';                
+                    $where.= " TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) BETWEEN $ageRange[0] AND $ageRange[1] ";
+                }
+            }
+
+            if($second_positions_codes != null){
+                $secondPositions = "";
+                $secondPositionsArray = explode(',', $second_positions_codes);
+                foreach($secondPositionsArray as $position => $value){
+                    $secondPositions .="'".$value."',";  
+                }
+                $positionsCodes = substr($secondPositions, 0, -1); 
+                $where.=(empty($where))?' WHERE ':' and ';                
+                $where.= "  second_position.position_code in ($positionsCodes) ";
+            }
 
             $order = 'players.name, players.surname';
 
@@ -790,16 +840,27 @@
             
             $sense = (isset($orderSense) && $orderSense !='ASC')?'DESC':'ASC';
 
+            $language_code = (isset($language_code) && $language_code != null)? $language_code: 'GB';
+
+            $page = (isset($page) && $page != null)? $page : 1;
+            $cant = (isset($limit)&& $limit != null)? $limit :100;            
+
+            $offset = ($page - 1) * $cant;
 
             $query = "
             SELECT  
             players.id AS player_id,
             players.name AS player_name,
             players.surname AS player_surname,
-            nacionalities.country_code AS nationality_code,            
+            nacionalities.country_code AS nationality_code,             
+            TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age,
+            players.height AS player_height,
+            players.weight AS player_weight,
+            IF(players.foot_code=1,'R','L') AS foot,
             CONCAT('$this->path_flag', nacionalities.country_code,'.svg') AS nationality_flag,
             positions.id AS position_id,
             positions.name AS position_name,
+            GROUP_CONCAT(second_position.position_code) as secondpositions,
             clubs.club_name AS club_name,
             CONCAT('$this->folder_club', clubs.club_logo) AS club_logo,    
             clubs.team_name,
@@ -827,7 +888,7 @@
                     FROM  $db.teams teams 
                 )AS teams ON teams.club_id = clubs.id
                 LEFT JOIN $db.division divisions ON divisions.id = teams.division_id AND divisions.country_code = clubs.country_code
-                $whereSubQuery              
+                $whereSubQuery
                 GROUP BY clubs.id
             ) AS clubs ON clubs.id = players.club_id
             LEFT JOIN (
@@ -839,9 +900,17 @@
             LEFT JOIN $db.country_codes country_codes 
             ON country_codes.country_code = nacionalities.country_code
             ) AS nacionalities ON nacionalities.player_id = players.id
-            LEFT JOIN $db.positions positions ON positions.id = players.position_id
-            $where            
-            ORDER BY $order $sense";        
+            LEFT JOIN $db.positions positions ON positions.id = players.position_id            
+            LEFT JOIN (
+			SELECT 
+			map_position.player_id,
+			map_position.position_code
+			FROM $db.player_map_position_secondary map_position
+			) AS second_position ON second_position.player_id = players.id
+            $where
+            GROUP BY players.id
+            ORDER BY $order $sense
+            LIMIT $offset,$cant";        
 
             $datos = parent::obtenerDatos($query);           
  

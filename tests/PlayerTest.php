@@ -42,28 +42,17 @@ class PlayerTest extends TestCase{
       
     }
 
-    public function testGetAvailablePlayers(){
 
-        $continent_code=null; 
-        $country_code = 'AR'; 
-        $category_id = null;
-        $division_id = null;
-        $club_id = 1;
-        $nacionality_code = NULL;
-        $position_id =1;
+    public function testgetAllPrimaryPositions(){        
+        
         $orderField = null;
         $orderSense = null;
+        $language_code = null;
 
-        $dataFilters = $this->player->getAvailablePlayers(
-            $continent_code, 
-            $country_code, 
-            $category_id,
-            $division_id,
-            $club_id,
-            $nacionality_code,
-            $position_id,
+        $dataFilters = $this->player->getAllPrimaryPositions( 
             $orderField,
-            $orderSense
+            $orderSense,
+            $language_code
         );
         
         //var_dump($dataFilters);
@@ -72,17 +61,61 @@ class PlayerTest extends TestCase{
       
     }
 
-    public function testGetAllPositions(){
+    public function testgetAllSecondaryPositions(){        
         
-        $position_id = null;
         $orderField = null;
         $orderSense = null;
-        $language_code = 'ES';
+        $language_code = null;
 
-        $dataFilters = $this->player->getAllPositions(            
-            $position_id,
+        $dataFilters = $this->player->getAllSecondaryPositions( 
             $orderField,
             $orderSense,
+            $language_code
+        );
+        
+        //var_dump($dataFilters);
+
+        $this->assertFalse(empty($dataFilters)); 
+      
+    }
+
+    public function testgetAvailablePlayersWithFilters(){
+
+        $continent_code= null; 
+        $country_code = null; 
+        $category_id = null;
+        $division_id = null;
+        $club_id = null;
+        $nationality_code = null;
+        $position_id = null;
+        $second_positions_codes = null;
+        $age_range = null;
+        $height_range = null;
+        $weight_range = null;
+        $foot = null;
+        $orderField = null;
+        $orderSense = null;
+        $page = 2;
+        $limit = 10;
+        $language_code = 'ES';
+
+        $dataFilters = $this->player->getAvailablePlayersWithFilters(
+            $continent_code, 
+            $country_code, 
+            $category_id,
+            $division_id,
+            $club_id,
+            $nationality_code,
+            $position_id,
+            $second_positions_codes,
+            $age_range,
+            $height_range,
+            $weight_range,
+            $foot,
+            $orderField,
+            $orderSense,
+            $page,
+            $limit,
             $language_code
         );
         
@@ -90,7 +123,7 @@ class PlayerTest extends TestCase{
 
         $this->assertFalse(empty($dataFilters)); 
       
-    }
+    }   
 
 
 
