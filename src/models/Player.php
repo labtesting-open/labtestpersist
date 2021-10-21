@@ -51,7 +51,7 @@
             $club_id, 
             $team_id, 
             $season_id,
-            $language_code,
+            $language_code = null,
             $position_id,
             $order,
             $find                     
@@ -61,6 +61,8 @@
                        
             $actionList = $this->getActionIdList($position_id);
             $actionName = $this->getActionListName($position_id);
+
+            $language_code = (isset($language_code) && $language_code != null)? $language_code: 'GB';
 
             $orderBy = (isset($order))? $order : "players.name";
             
@@ -76,8 +78,8 @@
             SELECT 
             players.id,
             players.name, 
-            players.surname, 
-            players.birthdate,             
+            players.surname,             
+            TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS age,             
             IF( ISNULL(players.img_profile), null,CONCAT('$this->path', '$this->folder_profile', players.img_profile)) AS img_profile_url,
             positions.name as position,
             nacionalities.nacionalities_names,
@@ -373,9 +375,11 @@
 
 
 
-        public function getPlayerPerfil($player_id, $language_id){
+        public function getPlayerPerfil($player_id, $language_code = null){
 
             $db = parent::getDataBase(); 
+
+            $language_code = (isset($language_code) && $language_code != null)? $language_code: 'GB';
 
             $query = "
             SELECT
@@ -383,37 +387,37 @@
             pl.name,
             pl.surname,
             pl.height,
-            pl.weight,
-            pl.birthdate,            
+            pl.weight,            
+            TIMESTAMPDIFF(YEAR,pl.birthdate,CURDATE()) AS player_age,            
             IF( ISNULL(pl.img_profile), null,CONCAT('$this->path', '$this->folder_profile', pl.img_profile)) AS img_profile_url,
             IF( ISNULL(pl.img_header), null,CONCAT('$this->path', '$this->folder_header', pl.img_header)) AS img_header_url,             
             pl.jersey_nro,
             clubs.name AS 'club_name',            
             IF( ISNULL(clubs.logo), null,CONCAT('$this->path','$this->folder_club', clubs.logo)) AS logo,
-            GROUP_CONCAT(cc.name) AS 'nacionalities_names',
-            GROUP_CONCAT('$this->path_flag',pn.country_code,'.svg') AS 'nacionalities_flags',
+            GROUP_CONCAT(cc.name) AS 'nationality_name',
+            GROUP_CONCAT('$this->path_flag',pn.country_code,'.svg') AS 'nationality_flag',
             ofi.name AS 'outfitter_name',
             ft.name AS 'main_foot',      
             pt.name AS 'name_main_position',
             pl.map_position AS map_main_position
-            FROM players pl
-            LEFT JOIN clubs clubs ON
+            FROM $db.players pl
+            LEFT JOIN $db.clubs clubs ON
                 pl.club_id = clubs.id
-            INNER JOIN outfitter ofi ON
+            INNER JOIN $db.outfitter ofi ON
                 pl.outfitter_id = ofi.id
-            INNER JOIN players_nacionalities pn ON
+            INNER JOIN $db.players_nacionalities pn ON
                 pl.id = pn.player_id
-            INNER JOIN country_codes cc ON
+            INNER JOIN $db.country_codes cc ON
                 pn.country_code=cc.country_code
-            INNER JOIN foot_translate ft ON
+            INNER JOIN $db.foot_translate ft ON
                 pl.foot_code = ft.foot_code
-            LEFT JOIN positions p ON
+            LEFT JOIN $db.positions p ON
                 pl.position_id=p.id
-            INNER JOIN position_translate pt ON
+            INNER JOIN $db.position_translate pt ON
                 p.id = pt.ID
             WHERE
-                pl.id =$player_id AND ft.country_code = '$language_id' 
-                AND pt.country_code='$language_id'" ;        
+                pl.id =$player_id AND ft.country_code = '$language_code' 
+                AND pt.country_code='$language_code'" ;        
 
             $datos = parent::obtenerDatos($query);    
 
@@ -860,7 +864,7 @@
             CONCAT('$this->path_flag', nacionalities.country_code,'.svg') AS nationality_flag,
             positions.id AS position_id,
             positions.name AS position_name,
-            GROUP_CONCAT(second_position.position_code) as secondpositions,
+            GROUP_CONCAT(second_position.position_code) as second_positions,
             clubs.club_name AS club_name,
             CONCAT('$this->folder_club', clubs.club_logo) AS club_logo,    
             clubs.team_name,
