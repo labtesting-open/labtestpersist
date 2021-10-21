@@ -28,7 +28,24 @@
 
             return $datos;
 
-        }      
+        }
+        
+        public function getAllSessions(){
+            
+            $db = parent::getDataBase(); 
+
+            $query = "
+            SELECT
+            seasons.id,
+            CONCAT(seasons.begin, '/',seasons.end) as season
+            FROM $db.seasons seasons            
+            ORDER by seasons.begin desc" ;        
+
+            $datos = parent::obtenerDatos($query);           
+
+            return $datos;
+
+        }
 
 
 
