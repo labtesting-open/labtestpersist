@@ -813,7 +813,7 @@
                 $weightRange = explode(',', $weight_range);
                 if(count($weightRange) > 1){
                     $where.=(empty($where))?' WHERE ':' and ';                
-                    $where.= " players.height BETWEEN $weightRange[0] AND $weightRange[1] ";
+                    $where.= " players.weight BETWEEN $weightRange[0] AND $weightRange[1] ";
                 }
             }
 
@@ -855,46 +855,41 @@
             SELECT  
             players.id AS player_id,
             players.name AS player_name,
-            players.surname AS player_surname,
-            nacionalities.country_code AS nationality_code,             
-            TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age,
+            players.surname AS player_surname,            
+            nacionalities.country_code AS nationality_code,   
+            TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age,             
             players.height AS player_height,
             players.weight AS player_weight,
             IF(players.foot_code=1,'R','L') AS foot,
             CONCAT('$this->path_flag', nacionalities.country_code,'.svg') AS nationality_flag,
             positions.id AS position_id,
             positions.name AS position_name,
-            GROUP_CONCAT(second_position.position_code) as second_positions,
+            GROUP_CONCAT(second_position.position_code) as secondpositions,
             clubs.club_name AS club_name,
-            CONCAT('$this->folder_club', clubs.club_logo) AS club_logo,    
+            CONCAT('$this->folder_club', clubs.club_logo) AS club_logo, 
+            clubs.team_id,
             clubs.team_name,
+            clubs.category_id,
             clubs.division_id,
             clubs.division_name
             FROM  $db.players players
             INNER JOIN (
                 SELECT
-                clubs.id,
+                clubs.id As club_id,
                 clubs.name AS club_name,
                 clubs.logo AS club_logo,
                 teams.category_id,
                 teams.division_id,
+                teams.id AS team_id,
                 teams.team_name,
                 countries.name AS country_name,
                 divisions.name AS division_name 
                 FROM  $db.clubs clubs
-                INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
-                LEFT JOIN (
-                    SELECT   
-                    teams.club_id AS club_id,
-                    teams.category_id,
-                    teams.division_id,
-                    teams.team_name
-                    FROM  $db.teams teams 
-                )AS teams ON teams.club_id = clubs.id
+                INNER JOIN $db.country_codes countries ON countries.country_code = clubs.country_code
+                LEFT JOIN $db.teams teams  ON teams.club_id = clubs.id
                 LEFT JOIN $db.division divisions ON divisions.id = teams.division_id AND divisions.country_code = clubs.country_code
                 $whereSubQuery
-                GROUP BY clubs.id
-            ) AS clubs ON clubs.id = players.club_id
+            ) AS clubs ON clubs.team_id = players.team_id
             LEFT JOIN (
             SELECT 
             nacionalities.player_id,

@@ -83,8 +83,8 @@ class PlayerTest extends TestCase{
 
         $continent_code= null; 
         $country_code = null; 
-        $category_id = null;
-        $division_id = null;
+        $category_id = 4;
+        $division_id = 16;
         $club_id = null;
         $nationality_code = null;
         $position_id = null;
@@ -95,7 +95,7 @@ class PlayerTest extends TestCase{
         $foot = null;
         $orderField = null;
         $orderSense = null;
-        $page = 2;
+        $page = 1;
         $limit = 10;
         $language_code = 'ES';
 
