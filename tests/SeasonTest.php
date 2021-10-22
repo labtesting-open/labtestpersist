@@ -7,16 +7,34 @@ use PHPUnit\Framework\TestCase;
 
 class SeasonTest extends TestCase{
 
-    private $op;
+    private $season;
 
     public function setUp(): void
     {
-        $this->op = new Elitelib\Season();
+        $this->season = new Elitelib\Season();
     }
 
-    public function testAdd()
+    public function testGetAllSeasons()
     {       
-        $this->assertEquals(25, 25);
+        $data = $this->season->getAllSeasons();
+        
+        //var_dump($data);
+
+        $this->assertFalse(empty($data)); 
+    }
+
+    public function testgetSeasonsWithMatchesByClubTeam()
+    {       
+        $club_id = 1;
+        $team_id = 1;
+        $onlySeasonsWithMatches = true;
+
+        $data = $this->season->getSeasonsWithMatchesByClubTeam($club_id, $team_id, $onlySeasonsWithMatches);
+        
+        var_dump($data);
+
+        $this->assertFalse(empty($data)); 
+
     }
 
 

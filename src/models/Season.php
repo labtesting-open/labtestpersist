@@ -5,24 +5,34 @@
     class Season extends Connect{         
 
 
-        public function getSeasonsByClubTeam($club_id, $team_id){
+        public function getSeasonsWithMatchesByClubTeam(
+            $club_id, $team_id, $onlyWithMatches = null
+        ){
             
-            $db = parent::getDataBase(); 
+            $db = parent::getDataBase();
+
+            $where = '';
+            
+            if( $onlyWithMatches != null && $onlyWithMatches){
+                $where = ' WHERE matches_played > 0 ';
+            }
 
             $query = "
             SELECT
             seasons.id,
-            CONCAT(seasons.begin, '/',seasons.end) as season
+            CONCAT(seasons.begin, '/',seasons.end) as season,
+            COALESCE(matches.matches_played, 0) as matches_played
             FROM $db.seasons seasons
-            INNER JOIN(
-            SELECT season_id, 
-            COUNT(DISTINCT id) AS matches_played
-            FROM $db.matches 
-            WHERE (club_id_home = $club_id and team_id_home = $team_id) OR
-            (club_id_visitor = $club_id and team_id_visitor = $team_id)
-            GROUP BY season_id
-            ) matches_counted On matches_counted.season_id = seasons.id
-            ORDER by seasons.begin desc" ;        
+            LEFT JOIN 
+            (
+                SELECT season_id, 
+                COUNT(DISTINCT id) AS matches_played
+                FROM $db.matches 
+                WHERE (club_id_home = $club_id and team_id_home = $team_id) OR
+                (club_id_visitor = $club_id and team_id_visitor = $team_id)
+            ) AS matches ON matches.season_id = seasons.id
+            $where
+            ORDER BY seasons.id DESC" ;        
 
             $datos = parent::obtenerDatos($query);           
 
@@ -30,7 +40,7 @@
 
         }
         
-        public function getAllSessions(){
+        public function getAllSeasons(){
             
             $db = parent::getDataBase(); 
 
@@ -46,6 +56,9 @@
             return $datos;
 
         }
+
+
+        
 
 
 

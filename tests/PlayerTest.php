@@ -119,7 +119,7 @@ class PlayerTest extends TestCase{
             $language_code
         );
         
-        var_dump($dataFilters);
+        //var_dump($dataFilters);
 
         $this->assertFalse(empty($dataFilters)); 
       
