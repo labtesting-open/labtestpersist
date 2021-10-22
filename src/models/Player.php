@@ -6,11 +6,12 @@
     class Player extends Connect{
 
         private $table = "players";  
-        private $path_flag ="imgs/svg/"; 
+        private $path_flag ="svg/"; 
         private $path ="imgs/";
         private $folder_profile ="players_profile/";  
         private $folder_header ="players_header/"; 
         private $folder_club ="clubs_logo/"; 
+        
 
 
 
@@ -105,7 +106,7 @@
                 SELECT 
                 player_nacionality.player_id AS player_id, 
                 GROUP_CONCAT(countries.name) AS nacionalities_names,
-                GROUP_CONCAT('$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
+                GROUP_CONCAT('$this->path', '$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
                 FROM $db.players_nacionalities player_nacionality
                 LEFT JOIN $db.country_codes countries
                 ON countries.country_code = player_nacionality.country_code
@@ -118,7 +119,7 @@
                 IFNULL(injuries.name,'N/D') AS injury_description,
                 players_injuries.begin AS injury_begin,
                 players_injuries.posible_end AS injury_posible_end,
-                CONCAT('$this->path_flag','redcross.png') AS injury_img
+                CONCAT('$this->path','$this->path_flag','redcross.png') AS injury_img
                 FROM $db.players_injuries players_injuries 
                 LEFT JOIN $db.injuries_translate injuries 
                 ON injuries.injury_id = players_injuries.injury_id and injuries.translate_code='$language_code'
@@ -246,7 +247,7 @@
                 SELECT 
                 player_nacionality.player_id AS player_id, 
                 GROUP_CONCAT(countries.name) AS nacionalities_names,
-                GROUP_CONCAT('$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
+                GROUP_CONCAT('$this->path','$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
                 FROM $db.players_nacionalities player_nacionality
                 LEFT JOIN $db.country_codes countries
                 ON countries.country_code = player_nacionality.country_code
@@ -298,7 +299,7 @@
                 SELECT 
                 player_nacionality.player_id AS player_id, 
                 GROUP_CONCAT(countries.name) AS nacionalities_names,
-                GROUP_CONCAT('$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
+                GROUP_CONCAT('$this->path', '$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
                 FROM $db.players_nacionalities player_nacionality
                 LEFT JOIN $db.country_codes countries
                 ON countries.country_code = player_nacionality.country_code
@@ -395,7 +396,7 @@
             clubs.name AS 'club_name',            
             IF( ISNULL(clubs.logo), null,CONCAT('$this->path','$this->folder_club', clubs.logo)) AS logo,
             GROUP_CONCAT(cc.name) AS 'nationality_name',
-            GROUP_CONCAT('$this->path_flag',pn.country_code,'.svg') AS 'nationality_flag',
+            GROUP_CONCAT('$this->path', '$this->path_flag',pn.country_code,'.svg') AS 'nationality_flag',
             ofi.name AS 'outfitter_name',
             ft.name AS 'main_foot',      
             pt.name AS 'name_main_position',
@@ -627,7 +628,7 @@
             SELECT  
             nacionalities.country_code,
             nacionalities.country_name,
-            CONCAT('$this->path_flag',nacionalities.country_code,'.svg') AS country_flags
+            CONCAT('$this->path', '$this->path_flag',nacionalities.country_code,'.svg') AS country_flags
             FROM  $db.players players
             INNER JOIN (
                 SELECT
@@ -855,18 +856,19 @@
             SELECT  
             players.id AS player_id,
             players.name AS player_name,
-            players.surname AS player_surname,            
+            players.surname AS player_surname,   
+            IF( ISNULL(players.img_profile), null,CONCAT('$this->path', '$this->folder_profile', players.img_profile)) AS img_profile_url,         
             nacionalities.country_code AS nationality_code,   
             TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age,             
             players.height AS player_height,
             players.weight AS player_weight,
             IF(players.foot_code=1,'R','L') AS foot,
-            CONCAT('$this->path_flag', nacionalities.country_code,'.svg') AS nationality_flag,
+            CONCAT('$this->path', '$this->path_flag', nacionalities.country_code,'.svg') AS nationality_flag,
             positions.id AS position_id,
             positions.name AS position_name,
             GROUP_CONCAT(second_position.position_code) as secondpositions,
-            clubs.club_name AS club_name,
-            CONCAT('$this->folder_club', clubs.club_logo) AS club_logo, 
+            clubs.club_name AS club_name,            
+            IF( ISNULL(clubs.club_logo), null,CONCAT('$this->path', '$this->folder_club', clubs.club_logo)) AS club_logo, 
             clubs.team_id,
             clubs.team_name,
             clubs.category_id,

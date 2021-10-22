@@ -31,7 +31,7 @@ class SeasonTest extends TestCase{
 
         $data = $this->season->getSeasonsWithMatchesByClubTeam($club_id, $team_id, $onlySeasonsWithMatches);
         
-        var_dump($data);
+        //var_dump($data);
 
         $this->assertFalse(empty($data)); 
 
