@@ -16,7 +16,7 @@ class ClubTest extends TestCase{
 
     public function testGetAvailableClubs(){
 
-        $continent_code='SA'; 
+        $continent_code= null; 
         $country_code = null; 
         $category_id = null;
         $division_id = null;
@@ -36,7 +36,7 @@ class ClubTest extends TestCase{
             $orderSense
         );
         
-        var_dump($data_club);
+        //var_dump($data_club);
 
         $this->assertFalse(empty($data_club)); 
       

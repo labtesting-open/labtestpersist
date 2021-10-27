@@ -82,12 +82,12 @@ class PlayerTest extends TestCase{
     public function testgetAvailablePlayersWithFilters(){
 
         $continent_code= null; 
-        $country_code = null; 
-        $category_id = 4;
-        $division_id = 16;
-        $club_id = null;
+        $country_code = 'AR'; 
+        $category_id = 1;
+        $division_id = 1;
+        $club_id = 1;
         $nationality_code = null;
-        $position_id = null;
+        $position_id = 4;
         $second_positions_codes = null;
         $age_range = null;
         $height_range = null;
@@ -96,7 +96,7 @@ class PlayerTest extends TestCase{
         $orderField = null;
         $orderSense = null;
         $page = 1;
-        $limit = 10;
+        $limit = 100;
         $language_code = 'ES';
 
         $dataFilters = $this->player->getAvailablePlayersWithFilters(
@@ -117,14 +117,65 @@ class PlayerTest extends TestCase{
             $page,
             $limit,
             $language_code
-        );
+        );        
+
         
         var_dump($dataFilters);
 
         $this->assertFalse(empty($dataFilters)); 
       
-    }   
+    }
 
 
+    public function testgetAvailablePlayersWithFiltersPages(){
+
+        $continent_code= null; 
+        $country_code = 'AR'; 
+        $category_id = 1;
+        $division_id = 1;
+        $club_id = 1;
+        $nationality_code = null;
+        $position_id = 4;
+        $second_positions_codes = null;
+        $age_range = null;
+        $height_range = null;
+        $weight_range = null;
+        $foot = null;
+        $orderField = null;
+        $orderSense = null;
+        $page = 1;
+        $limit = 100;
+        $language_code = 'ES';
+
+        $pagesRows = $this->player->getAvailablePlayersWithFiltersTotalRows(
+            $continent_code, 
+            $country_code, 
+            $category_id,
+            $division_id,
+            $club_id,
+            $nationality_code,
+            $position_id,
+            $second_positions_codes,
+            $age_range,
+            $height_range,
+            $weight_range,
+            $foot,
+            $orderField,
+            $orderSense,
+            $page,
+            $limit,
+            $language_code
+        );        
+
+        
+        var_dump($pagesRows);
+
+        $totalPages = ceil($pagesRows / $limit);
+
+        echo "total rows: $pagesRows - total pages: $totalPages";
+
+        $this->assertFalse(empty($pagesRows)); 
+      
+    }
 
 }

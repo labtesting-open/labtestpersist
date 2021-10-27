@@ -733,8 +733,106 @@
             return $datos;
         }
 
-        
-        public function getAvailablePlayersWithFilters(
+
+        private function getQueryPlayersWithFilters(
+            $db,
+            $whereSubQuery,
+            $whereNationality,
+            $whereSecondPositions,
+            $joinSecondPositions,
+            $where
+        )
+        {
+
+            $query = "
+            SELECT  
+            players.id AS player_id,
+            players.name AS player_name,
+            players.surname AS player_surname,   
+            IF( ISNULL(players.img_profile), null,CONCAT('$this->path', '$this->folder_profile', players.img_profile)) AS img_profile_url,                       
+            TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age,             
+            players.height AS player_height,
+            players.weight AS player_weight,
+            IF(players.foot_code=1,'R','L') AS foot,
+            nacionalities.nationalities_flags AS nationalities_flags,
+            nacionalities.nationalities_names AS nationalities_names,
+            positions.id AS position_id,
+            positions.name AS position_name,
+            second_position.second_positions_codes AS second_positions_codes,
+            second_position.second_positions_names AS second_positions_names,
+            clubs.club_name AS club_name,            
+            IF( ISNULL(clubs.club_logo), null,CONCAT('$this->path', '$this->folder_club', clubs.club_logo)) AS club_logo, 
+            clubs.team_id,
+            clubs.team_name,
+            clubs.category_id,
+            clubs.division_id,
+            clubs.division_name
+            FROM  $db.players players
+            INNER JOIN (
+                SELECT
+                clubs.id As club_id,
+                clubs.name AS club_name,
+                clubs.logo AS club_logo,
+                teams.category_id,
+                teams.division_id,
+                teams.id AS team_id,
+                teams.team_name,
+                countries.name AS country_name,
+                divisions.name AS division_name 
+                FROM  $db.clubs clubs
+                INNER JOIN $db.country_codes countries ON countries.country_code = clubs.country_code
+                LEFT JOIN $db.teams teams  ON teams.club_id = clubs.id
+                LEFT JOIN $db.division divisions ON divisions.id = teams.division_id AND divisions.country_code = clubs.country_code
+                $whereSubQuery
+            ) AS clubs ON clubs.team_id = players.team_id
+            INNER JOIN (
+                SELECT 
+                player_nacionality.player_id,
+                nationalities_full.nationalities_codes,
+                nationalities_full.nationalities_flags,
+                nationalities_full.nationalities_names  
+                FROM $db.players_nacionalities player_nacionality  
+                LEFT JOIN(
+                  SELECT 
+                  nacionalities.player_id,
+                  group_concat(nacionalities.country_code) AS nationalities_codes ,
+                  group_concat( CONCAT('$this->path', '$this->path_flag', nacionalities.country_code,'.svg')) AS nationalities_flags,
+                  group_concat( country_codes.name) AS nationalities_names
+                  FROM $db.players_nacionalities nacionalities 
+                  LEFT JOIN $db.country_codes country_codes
+                  ON country_codes.country_code = nacionalities.country_code	
+                  GROUP by nacionalities.player_id
+                ) AS nationalities_full ON nationalities_full.player_id = player_nacionality.player_id                  
+                $whereNationality
+            ) AS nacionalities ON nacionalities.player_id = players.id
+            LEFT JOIN $db.positions positions ON positions.id = players.position_id            
+            $joinSecondPositions JOIN (
+                SELECT
+				secondary_positions.player_id,
+				second_positions_full.map_positions_codes AS second_positions_codes,
+				second_positions_full.map_positions_names AS second_positions_names
+				FROM $db.player_map_position_secondary secondary_positions  
+				LEFT JOIN(
+					SELECT
+					secondary_positions.player_id,
+					group_concat(secondary_positions.position_code) AS map_positions_codes,
+					group_concat(map_position_t.name) AS map_positions_names
+					FROM $db.player_map_position_secondary secondary_positions
+					LEFT JOIN $db.map_position_translate map_position_t
+					ON  map_position_t.code = secondary_positions.position_code AND map_position_t.translate_code='ES'             
+					GROUP BY secondary_positions.player_id
+				) AS second_positions_full ON second_positions_full.player_id = secondary_positions.player_id
+				$whereSecondPositions
+				GROUP BY secondary_positions.player_id
+			) AS second_position ON second_position.player_id = players.id
+            $where
+            GROUP BY players.id"; 
+
+            return $query;
+
+        }
+
+        private function getFiltersPlayersWithFilters(
             $continent_code=null, 
             $country_code = null, 
             $category_id = null,
@@ -752,11 +850,9 @@
             $page = null,
             $limit = null,
             $language_code = null
-
         )
         {
-            $db = parent::getDataBase();   
-            
+
             $whereSubQuery="";
 
             if($continent_code != null){
@@ -784,12 +880,14 @@
                 $whereSubQuery.= " clubs.id = $club_id";
             }  
             
-            $where = "";
+            $whereNationality = "";
 
             if($nationality_code != null){
-                $where.=' WHERE ';                
-                $where.= " nacionalities.country_code = '$nationality_code'";
+                $whereNationality.=' WHERE ';                
+                $whereNationality.= " player_nacionality.country_code='$nationality_code'";
             }
+
+            $where = "";
             
             if($position_id != null){
                 $where.=(empty($where))?' WHERE ':' and ';               
@@ -826,6 +924,9 @@
                 }
             }
 
+            $whereSecondPositions = "";
+            $joinSecondPositions ="LEFT";
+
             if($second_positions_codes != null){
                 $secondPositions = "";
                 $secondPositionsArray = explode(',', $second_positions_codes);
@@ -833,8 +934,9 @@
                     $secondPositions .="'".$value."',";  
                 }
                 $positionsCodes = substr($secondPositions, 0, -1); 
-                $where.=(empty($where))?' WHERE ':' and ';                
-                $where.= "  second_position.position_code in ($positionsCodes) ";
+                $joinSecondPositions ="INNER";
+                $whereSecondPositions.=(empty($where))?' WHERE ':' and ';                
+                $whereSecondPositions.= " secondary_positions.position_code in ($positionsCodes) ";
             }
 
             $order = 'players.name, players.surname';
@@ -852,70 +954,149 @@
 
             $offset = ($page - 1) * $cant;
 
-            $query = "
-            SELECT  
-            players.id AS player_id,
-            players.name AS player_name,
-            players.surname AS player_surname,   
-            IF( ISNULL(players.img_profile), null,CONCAT('$this->path', '$this->folder_profile', players.img_profile)) AS img_profile_url,         
-            nacionalities.country_code AS nationality_code,   
-            TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age,             
-            players.height AS player_height,
-            players.weight AS player_weight,
-            IF(players.foot_code=1,'R','L') AS foot,
-            CONCAT('$this->path', '$this->path_flag', nacionalities.country_code,'.svg') AS nationality_flag,
-            positions.id AS position_id,
-            positions.name AS position_name,
-            GROUP_CONCAT(second_position.position_code) as secondpositions,
-            clubs.club_name AS club_name,            
-            IF( ISNULL(clubs.club_logo), null,CONCAT('$this->path', '$this->folder_club', clubs.club_logo)) AS club_logo, 
-            clubs.team_id,
-            clubs.team_name,
-            clubs.category_id,
-            clubs.division_id,
-            clubs.division_name
-            FROM  $db.players players
-            INNER JOIN (
-                SELECT
-                clubs.id As club_id,
-                clubs.name AS club_name,
-                clubs.logo AS club_logo,
-                teams.category_id,
-                teams.division_id,
-                teams.id AS team_id,
-                teams.team_name,
-                countries.name AS country_name,
-                divisions.name AS division_name 
-                FROM  $db.clubs clubs
-                INNER JOIN $db.country_codes countries ON countries.country_code = clubs.country_code
-                LEFT JOIN $db.teams teams  ON teams.club_id = clubs.id
-                LEFT JOIN $db.division divisions ON divisions.id = teams.division_id AND divisions.country_code = clubs.country_code
-                $whereSubQuery
-            ) AS clubs ON clubs.team_id = players.team_id
-            LEFT JOIN (
-            SELECT 
-            nacionalities.player_id,
-            nacionalities.country_code ,
-            country_codes.name as country_name
-            FROM $db.players_nacionalities nacionalities 
-            LEFT JOIN $db.country_codes country_codes 
-            ON country_codes.country_code = nacionalities.country_code
-            ) AS nacionalities ON nacionalities.player_id = players.id
-            LEFT JOIN $db.positions positions ON positions.id = players.position_id            
-            LEFT JOIN (
-			SELECT 
-			map_position.player_id,
-			map_position.position_code
-			FROM $db.player_map_position_secondary map_position
-			) AS second_position ON second_position.player_id = players.id
-            $where
-            GROUP BY players.id
-            ORDER BY $order $sense
-            LIMIT $offset,$cant";        
+            $filters = array(
+                "whereSubQuery" => $whereSubQuery, 
+                "whereNationality" =>$whereNationality,
+                "whereSecondPositions" =>$whereSecondPositions,
+                "joinSecondPositions" =>$joinSecondPositions, 
+                "where" => $where,
+                "order" => $order,
+                "sense" => $sense,
+                "offset" => $offset,
+                "cant" => $cant
+            );
+
+            return $filters;
+
+        }
+
+        
+        public function getAvailablePlayersWithFilters(
+            $continent_code=null, 
+            $country_code = null, 
+            $category_id = null,
+            $division_id = null,
+            $club_id = null,
+            $nationality_code = null, 
+            $position_id = null,
+            $second_positions_codes = null,
+            $age_range = null,
+            $height_range = null,
+            $weight_range = null,
+            $foot = null,
+            $orderField = null,
+            $orderSense = null,
+            $page = null,
+            $limit = null,
+            $language_code = null
+
+        )
+        {
+            $db = parent::getDataBase();
+
+            $filters = $this->getFiltersPlayersWithFilters(
+                $continent_code, 
+                $country_code, 
+                $category_id,
+                $division_id,
+                $club_id,
+                $nationality_code, 
+                $position_id,
+                $second_positions_codes,
+                $age_range,
+                $height_range,
+                $weight_range,
+                $foot,
+                $orderField,
+                $orderSense,
+                $page,
+                $limit,
+                $language_code
+            );
+
+            $query = $this->getQueryPlayersWithFilters(
+                $db, 
+                $filters["whereSubQuery"], 
+                $filters["whereNationality"],
+                $filters["whereSecondPositions"],
+                $filters["joinSecondPositions"], 
+                $filters["where"]
+            );
+
+            $order = $filters["order"];
+            $sense = $filters["sense"];
+            $offset = $filters["offset"];
+            $cant = $filters["cant"];
+
+            $query.= " 
+            ORDER BY $order $sense 
+            LIMIT $offset,$cant";           
 
             $datos = parent::obtenerDatos($query);           
  
             return $datos;
+        }
+
+
+        public function getAvailablePlayersWithFiltersTotalRows(
+            $continent_code=null, 
+            $country_code = null, 
+            $category_id = null,
+            $division_id = null,
+            $club_id = null,
+            $nationality_code = null, 
+            $position_id = null,
+            $second_positions_codes = null,
+            $age_range = null,
+            $height_range = null,
+            $weight_range = null,
+            $foot = null,
+            $orderField = null,
+            $orderSense = null,
+            $page = null,
+            $limit = null,
+            $language_code = null
+
+        )
+        {
+            $db = parent::getDataBase();
+
+            $filters = $this->getFiltersPlayersWithFilters(
+                $continent_code, 
+                $country_code, 
+                $category_id,
+                $division_id,
+                $club_id,
+                $nationality_code, 
+                $position_id,
+                $second_positions_codes,
+                $age_range,
+                $height_range,
+                $weight_range,
+                $foot,
+                $orderField,
+                $orderSense,
+                $page,
+                $limit,
+                $language_code
+            );
+
+            $mainQuery = $this->getQueryPlayersWithFilters(
+                $db, 
+                $filters["whereSubQuery"], 
+                $filters["whereNationality"],
+                $filters["whereSecondPositions"],
+                $filters["joinSecondPositions"], 
+                $filters["where"]
+            );          
+
+            $query = "SELECT count(*) AS totalrows FROM (
+                $mainQuery
+                ) AS registros";           
+
+            $datos = parent::obtenerDatos($query);                    
+ 
+            return intval($datos[0]['totalrows']);
         }
 
 
