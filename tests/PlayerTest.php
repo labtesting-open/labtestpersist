@@ -87,7 +87,7 @@ class PlayerTest extends TestCase{
         $division_id = 1;
         $club_id = 1;
         $nationality_code = null;
-        $position_id = 4;
+        $position_id = null;
         $second_positions_codes = null;
         $age_range = null;
         $height_range = null;
@@ -135,7 +135,7 @@ class PlayerTest extends TestCase{
         $division_id = 1;
         $club_id = 1;
         $nationality_code = null;
-        $position_id = 4;
+        $position_id = null;
         $second_positions_codes = null;
         $age_range = null;
         $height_range = null;
@@ -168,7 +168,7 @@ class PlayerTest extends TestCase{
         );        
 
         
-        var_dump($pagesRows);
+        //var_dump($pagesRows);
 
         $totalPages = ceil($pagesRows / $limit);
 
