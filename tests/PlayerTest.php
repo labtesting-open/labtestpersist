@@ -120,7 +120,7 @@ class PlayerTest extends TestCase{
         );        
 
         
-        var_dump($dataFilters);
+        //var_dump($dataFilters);
 
         $this->assertFalse(empty($dataFilters)); 
       
@@ -172,9 +172,20 @@ class PlayerTest extends TestCase{
 
         $totalPages = ceil($pagesRows / $limit);
 
-        echo "total rows: $pagesRows - total pages: $totalPages";
+        //echo "total rows: $pagesRows - total pages: $totalPages";
 
         $this->assertFalse(empty($pagesRows)); 
+      
+    }
+
+
+    public function testGetPlayersRangesOfMeasures(){      
+
+        $dataFilters = $this->player->getPlayersRangesOfMeasures();
+        
+        var_dump($dataFilters);
+
+        $this->assertFalse(empty($dataFilters)); 
       
     }
 

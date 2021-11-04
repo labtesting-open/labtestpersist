@@ -690,8 +690,8 @@
             SELECT
             positions.id AS position_id,
             position_translate.name AS position_name
-            FROM elites17_wizard.positions positions
-            LEFT JOIN elites17_wizard.position_translate 
+            FROM $db.positions positions
+            LEFT JOIN $db.position_translate 
             ON position_translate.id = positions.id AND position_translate.country_code = '$language'                        
             ORDER BY $order $sense";        
 
@@ -1079,6 +1079,26 @@
             $datos = parent::obtenerDatos($query);                    
  
             return intval($datos[0]['totalrows']);
+        }
+
+
+        public function getPlayersRangesOfMeasures()
+        {
+            $db = parent::getDataBase();
+
+            $query = "
+            SELECT 
+            max(height) AS max_height,
+            min(height) AS min_height,
+            max(weight) AS max_weight,
+            min(weight) AS min_weight,
+            max(TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE())) AS max_age,
+            min(TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE())) AS min_age
+            FROM $db.players";        
+
+            $datos = parent::obtenerDatos($query);           
+ 
+            return $datos;
         }
 
 
