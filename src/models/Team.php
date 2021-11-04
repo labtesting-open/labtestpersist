@@ -115,6 +115,97 @@
             return $datos;
         }
 
+        public function getAvailableTeamsWithFiltersTotalRows(
+            $continent_code = null, 
+            $country_code = null, 
+            $category_id = null,
+            $division_id = null,           
+            $order_field = null,
+            $order_sense = null,
+            $page = null,
+            $limit = null,
+            $language_code = null
+        )
+        {
+            $db = parent::getDataBase();
+
+            $filters = $this->getFiltersTeamsWithFilters(
+                $continent_code, 
+                $country_code, 
+                $category_id,
+                $division_id,                
+                $order_field,
+                $order_sense,
+                $page,
+                $limit,
+                $language_code
+            );
+
+            $mainQuery = $this->getQueryTeamsWithFilters(
+                $db,
+                $filters["where"],
+                $filters["language_code"]
+            );
+
+            $query = "SELECT count(*) AS totalrows FROM (
+                $mainQuery
+                ) AS registros";           
+
+            $datos = parent::obtenerDatos($query);                    
+ 
+            return intval($datos[0]['totalrows']);
+
+        }
+
+
+        public function getAvailableTeamsWithFilters(
+            $continent_code = null, 
+            $country_code = null, 
+            $category_id = null,
+            $division_id = null,           
+            $order_field = null,
+            $order_sense = null,
+            $page = null,
+            $limit = null,
+            $language_code = null
+        )
+        {
+            $db = parent::getDataBase();
+
+            $filters = $this->getFiltersTeamsWithFilters(
+                $continent_code, 
+                $country_code, 
+                $category_id,
+                $division_id,                
+                $order_field,
+                $order_sense,
+                $page,
+                $limit,
+                $language_code
+            );
+
+            $query = $this->getQueryTeamsWithFilters(
+                $db,
+                $filters["where"],
+                $filters["language_code"]
+            );
+
+            $order = $filters["order"];
+            $sense = $filters["sense"];
+            $offset = $filters["offset"];
+            $cant = $filters["cant"];
+
+            $query.= " 
+            ORDER BY $order $sense 
+            LIMIT $offset,$cant";           
+
+            $datos = parent::obtenerDatos($query);           
+ 
+            return $datos;
+
+
+        }        
+
 
         public function getTeamsByFilters(
             $continent_code, 
@@ -209,6 +300,118 @@
             return $datos;
 
         }    
+
+
+        private function getQueryTeamsWithFilters(
+           $db,
+           $where,
+           $translate_code
+        )
+        {
+            $query ="
+            SELECT 
+            teams.id AS team_id,
+            clubs.id AS club_id,
+            IFNULL(clases.name,clubs.name) AS team_name,            
+            clubs.name AS club_name,            
+            IF( ISNULL(clubs.logo), null,CONCAT('$this->folder_club', clubs.logo)) AS logo, 
+            categories.name AS category_name,
+            divisions.name AS division_name,
+            CONCAT(countries.name) AS country_name,
+            CONCAT('$this->path_flag',countries.country_code,'.svg') AS country_flag,
+            COALESCE(players_count, 0) AS squad
+            FROM $db.teams teams
+            INNER JOIN  $db.clubs clubs ON clubs.id = teams.club_id
+            INNER JOIN  $db.categories categories ON categories.id = teams.category_id
+            INNER JOIN  $db.division divisions ON divisions.id = teams.division_id
+            INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
+            LEFT JOIN  $db.division_class_translate clases 
+            ON clases.id = divisions.division_class_id and clases.country_code='$translate_code'
+            LEFT JOIN (
+            SELECT   
+            players.team_id AS team_id
+            ,COUNT(players.id) AS players_count		
+            FROM  $db.players players   
+            GROUP by players.team_id
+            ) AS plantilla ON plantilla.team_id = teams.id      
+            $where
+            ";    
+
+            return $query;
+        }
+
+
+        private function getFiltersTeamsWithFilters(
+            $continent_code = null, 
+            $country_code = null, 
+            $category_id = null,
+            $division_id = null,           
+            $order_field = null,
+            $order_sense = null,
+            $page = null,
+            $limit = null,
+            $language_code = null
+        )
+        { 
+
+            $where = "";
+
+            if($continent_code != null){
+                $where.= "WHERE countries.continent_code='$continent_code'";                   
+            }
+
+            if($country_code != null){                
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "countries.country_code='$country_code'";                    
+            }     
+
+            if($category_id != null){
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "teams.category_id=$category_id";                    
+            }    
+            
+            if($division_id != null){
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "teams.division_id=$division_id";                    
+            }           
+
+            $order = 'teams.id';
+
+            if($order_field != null){
+                switch ($order_field) {
+                
+                    case 'club_name':
+                        $order ="clubs.name";
+                        break;
+                    case 'squad':
+                        $order ="squad";
+                        break;
+                    default:
+                        $order ="teams.id";
+                }
+            }
+            
+            $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
+
+            $language_code = (isset($language_code) && $language_code != null)? $language_code: 'GB';
+
+            $page = (isset($page) && $page != null)? $page : 1;
+            $cant = (isset($limit)&& $limit != null)? $limit :100;            
+
+            $offset = ($page - 1) * $cant;
+
+            $filters = array(
+                "language_code"=> $language_code,
+                "where" => $where,
+                "order" => $order,
+                "sense" => $sense,
+                "offset" => $offset,
+                "cant" => $cant
+            );
+
+            return $filters;
+
+        }
 
 
 
