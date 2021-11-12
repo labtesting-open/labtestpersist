@@ -766,6 +766,7 @@
             countries.name AS country_name,
 			teams.division_id,
             divisions.name AS division_name,
+            divisions.division_class_id AS division_class_id,
             teams.category_id AS category_id
             FROM  $db.players players
             INNER JOIN $db.clubs clubs ON clubs.id = players.club_id
@@ -927,7 +928,22 @@
             $order = 'players.name, players.surname';
 
             if($orderField != null){
-                $order = $orderField;
+
+                switch(strtolower($orderField))
+                {
+                    case 'player_name':
+                        $order = 'players.name, players.surname';
+
+                    case 'player_age':
+                        $order = 'player_age';
+
+                    case 'division':
+                        $order = 'division_class_id';    
+
+                    default:
+                        $order = 'players.name, players.surname';
+                }   
+
             }
             
             $sense = (isset($orderSense) && $orderSense !='ASC')?'DESC':'ASC';

@@ -70,7 +70,7 @@ class TeamTest extends TestCase{
         
        $totalPages = ceil($pagesRows / $limit);
 
-       echo "total rows: $pagesRows - total pages: $totalPages";
+      // echo "total rows: $pagesRows - total pages: $totalPages";
 
        $this->assertFalse(empty($pagesRows)); 
       

@@ -93,7 +93,7 @@ class PlayerTest extends TestCase{
         $height_range = null;
         $weight_range = null;
         $foot = null;
-        $orderField = null;
+        $orderField = 'player_age';
         $orderSense = null;
         $page = 1;
         $limit = 100;
@@ -120,7 +120,7 @@ class PlayerTest extends TestCase{
         );        
 
         
-        //var_dump($dataFilters);
+        var_dump($dataFilters);
 
         $this->assertFalse(empty($dataFilters)); 
       
@@ -131,8 +131,8 @@ class PlayerTest extends TestCase{
 
         $continent_code= null; 
         $country_code = 'AR'; 
-        $category_id = 1;
-        $division_id = 1;
+        $category_id = null;
+        $division_id = null;
         $club_id = 1;
         $nationality_code = null;
         $position_id = null;
