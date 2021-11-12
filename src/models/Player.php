@@ -1025,7 +1025,7 @@
 
             $datos = parent::obtenerDatos($query);           
  
-            return $query;
+            return $datos;
         }
 
 
