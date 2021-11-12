@@ -93,7 +93,7 @@ class PlayerTest extends TestCase{
         $height_range = null;
         $weight_range = null;
         $foot = null;
-        $orderField = 'player_age';
+        $orderField = null;
         $orderSense = null;
         $page = 1;
         $limit = 100;

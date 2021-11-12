@@ -925,25 +925,17 @@
                 $whereSecondPositions.= " secondary_positions.position_code in ($positionsCodes) ";
             }
 
-            $order = 'players.name, players.surname';
+            $order = 'players.name, players.surname';           
 
             if($orderField != null){
 
-                switch(strtolower($orderField))
-                {
-                    case 'player_name':
-                        $order = 'players.name, players.surname';
+                if( strtolower($orderField) == 'player_age'){
+                    $order = 'player_age';
+                }
 
-                    case 'player_age':
-                        $order = 'player_age';
-
-                    case 'division':
-                        $order = 'division_class_id';    
-
-                    default:
-                        $order = 'players.name, players.surname';
-                }   
-
+                if( strtolower($orderField) == 'division'){
+                    $order = 'division_class_id';
+                }
             }
             
             $sense = (isset($orderSense) && $orderSense !='ASC')?'DESC':'ASC';
@@ -1033,7 +1025,7 @@
 
             $datos = parent::obtenerDatos($query);           
  
-            return $datos;
+            return $query;
         }
 
 
