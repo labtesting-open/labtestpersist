@@ -925,7 +925,7 @@
                 $whereSecondPositions.= " secondary_positions.position_code in ($positionsCodes) ";
             }
 
-            $order = 'players.name, players.surname';           
+            $order = 'players.name';           
 
             if($orderField != null){
 
