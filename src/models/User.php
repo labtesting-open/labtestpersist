@@ -28,6 +28,7 @@
             u.plan_id,
             p.name,
             u.estado,
+            u.country_code,
             p.service_stream,
             p.service_admin_own_club,
             p.service_info_others_clubs,
@@ -54,6 +55,7 @@
             u.name,
             u.surname,
             u.plan_id,
+            u.country_code,
             p.name as plan_name,           
             IF( ISNULL(u.img_perfil_url), null,
 				CONCAT('$this->user_path',u.id,'/',u.img_perfil_url)

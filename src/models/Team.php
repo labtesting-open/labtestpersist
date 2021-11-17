@@ -375,7 +375,7 @@
                 $where.= "teams.division_id=$division_id";                    
             }           
 
-            $order = 'teams.id';
+            $order = 'club_name';
 
             if($order_field != null){
                 switch ($order_field) {
@@ -386,8 +386,14 @@
                     case 'squad':
                         $order ="squad";
                         break;
+                    case 'divison_name':
+                        $order ="divison_name";
+                        break;
+                    case 'category_name':
+                        $order ="category_name";
+                        break;
                     default:
-                        $order ="teams.id";
+                        $order ="clubs.name";
                 }
             }
             
