@@ -68,12 +68,33 @@ class TeamTest extends TestCase{
         $language_code
        );
         
-       $totalPages = ceil($pagesRows / $limit);
+      // $totalPages = ceil($pagesRows / $limit);
 
       // echo "total rows: $pagesRows - total pages: $totalPages";
 
        $this->assertFalse(empty($pagesRows)); 
       
+    }
+
+    public function testAddteam(){
+        
+        $club_id = 1;
+        $category_id = 2;
+        $division_id = 4;
+        $team_name = 'nuevo team';
+        $img_team = 'pepelepu';
+        
+        $actionResult = $this->team->add($club_id, 
+        $category_id, 
+        $division_id, 
+        $team_name, 
+        $img_team
+        );
+
+        var_dump($actionResult);
+        
+        $this->assertFalse(empty($actionResult));
+
     }
 
 

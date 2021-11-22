@@ -420,5 +420,31 @@
         }
 
 
+        public function add(
+            $club_id,             
+            $category_id,
+            $division_id,           
+            $team_name,
+            $img_team = null
+        )
+        {
+            $db = parent::getDataBase();            
+
+            $query="INSERT INTO $db.teams(club_id, category_id, division_id, team_name, img_team)
+            VALUES ($club_id, $category_id, $division_id, '$team_name'";
+            
+            if(isset($img_team)){
+                $query.= ", '$img_team')";                
+            }else{
+                $query.= ", null)";
+            }            
+
+            $verifica = parent::nonQuery($query);
+ 
+            return ($verifica)? 1 : 0;           
+
+        }
+
+
 
     }
