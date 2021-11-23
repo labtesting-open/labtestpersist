@@ -446,5 +446,152 @@
         }
 
 
+        public function delete($team_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE FROM $db.teams WHERE id=$team_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;           
+
+        }
+
+
+        public function update(
+            $team_id,
+            $club_id,             
+            $category_id,
+            $division_id,           
+            $team_name,
+            $img_team = null
+        )
+        {
+            $db = parent::getDataBase();            
+
+            $query="UPDATE $db.teams SET
+            club_id=$club_id,
+            category_id=$category_id, 
+            division_id=$division_id, 
+            team_name='$team_name'";            
+            
+            if(isset($img_team)){
+                $query.= ", img_team='$img_team' ";                
+            }            
+
+            $query.=" WHERE id=$team_id";
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;           
+
+        }
+
+
+        public function getNumberOfMatchesPlayedByTeam($team_id)
+        {
+            $db = parent::getDataBase(); 
+
+            $query = "SELECT count(*) as matches
+            FROM $db.matches
+            where team_id_visitor = $team_id 
+            or team_id_home = $team_id" ;        
+
+            $rows = parent::obtenerDatos($query);           
+
+            return $rows;
+        }
+
+
+        public function getNumberOfPlayersInTheTeam($team_id)
+        {
+            $db = parent::getDataBase(); 
+
+            $query = "SELECT count(*) 
+            FROM $db.players
+            where team_id = $team_id" ;        
+
+            $rows = parent::obtenerDatos($query);           
+
+            return $rows;
+        }
+
+
+        public function deleteTeamPlayers($team_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE FROM $db.players WHERE team_id=$team_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;
+        }
+
+
+        public function deleteAllPlayersNacionalitiesFromTeam($team_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE nacionalities
+            FROM  $db.players_nacionalities nacionalities
+            INNER JOIN $db.players players 
+            ON players.id = nacionalities.player_id and players.team_id=$team_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;     
+        }
+
+
+        public function deleteAllPlayersInjuriesFromTeam($team_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE injuries
+            FROM  $db.players_injuries injuries
+            INNER JOIN $db.players players 
+            ON players.id = injuries.player_id and players.team_id=$team_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;     
+        }
+
+
+        public function deleteAllPlayersSocialMediaFromTeam($team_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE social_media
+            FROM  $db.player_social_media social_media
+            INNER JOIN $db.players players 
+            ON players.id = social_media.player_id and players.team_id=$team_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;     
+        }
+
+
+        public function deleteAllPlayersMapPositionSecondaryFromTeam($team_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE map_position
+            FROM  $db.player_map_position_secondary map_position
+            INNER JOIN $db.players players 
+            ON players.id = map_position.player_id and players.team_id=$team_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;     
+        }
+
+
+
+
+
 
     }
