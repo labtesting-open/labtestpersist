@@ -122,6 +122,18 @@ class TeamTest extends TestCase{
 
     }
 
+    public function testGetTeam()
+    {
+        $team_id=1;
+        
+        $teamInfo = $this->team->getTeam($team_id);
+
+        var_dump($teamInfo);
+
+        $this->assertFalse(empty($teamInfo));
+
+    }
+
 
     public function testDeleteTeam(){
         
@@ -158,7 +170,7 @@ class TeamTest extends TestCase{
 
         }
 
-        print_r($changes);
+        //print_r($changes);
 
         $this->assertFalse(empty($changes));
 

@@ -6,7 +6,29 @@
        
         private $folder_team ="imgs/teams_profile/";   
         private $path_flag ="imgs/svg/";
-        private $folder_club ="imgs/clubs_logo/";   
+        private $folder_club ="imgs/clubs_logo/";
+        
+        
+        public function getTeam($team_id)
+        {
+            $db = parent::getDataBase();
+
+            $query="SELECT  
+            teams.team_name,
+            teams.category_id,
+            teams.division_id,
+            club.country_code,
+            teams.img_team
+            FROM $db.teams teams
+            INNER JOIN $db.clubs club 
+            ON teams.club_id = club.id
+            WHERE teams.id=$team_id";
+
+            $rows = parent::obtenerDatos($query);           
+
+            return $rows;
+
+        }
 
 
         public function getTeams($club_id, $country_code = null){
@@ -24,7 +46,7 @@
             COALESCE(players_count, 0) AS players,
             COALESCE(age_average, 0) AS age_average,                        
             IF( ISNULL(teams.img_team), null,CONCAT('$this->folder_team', teams.img_team)) AS img_team
-            FROM elites17_wizard.teams teams
+            FROM $db.teams teams
             LEFT JOIN $db.clubs c ON teams.club_id = c.id
             LEFT JOIN $db.categories ct ON teams.category_id = ct.id
             LEFT JOIN $db.division d ON teams.division_id = d.id
@@ -40,9 +62,9 @@
             ) players ON players.team_id = teams.id                        
             WHERE teams.club_id=$club_id" ;        
 
-            $datos = parent::obtenerDatos($query);           
+            $rows = parent::obtenerDatos($query);           
 
-            return $datos;
+            return $rows;
 
         }      
 
@@ -60,9 +82,9 @@
             WHERE players.club_id=$club_id
             GROUP BY team_id" ;        
 
-            $datos = parent::obtenerDatos($query);           
+            $rows = parent::obtenerDatos($query);           
 
-            return $datos;
+            return $rows;
 
         }
         
@@ -110,9 +132,9 @@
             group by categories.id           
             ORDER BY categories.name" ;        
 
-            $datos = parent::obtenerDatos($query);    
+            $rows = parent::obtenerDatos($query);    
             
-            return $datos;
+            return $rows;
         }
 
         public function getAvailableTeamsWithFiltersTotalRows(
@@ -151,9 +173,9 @@
                 $mainQuery
                 ) AS registros";           
 
-            $datos = parent::obtenerDatos($query);                    
+            $rows = parent::obtenerDatos($query);                    
  
-            return intval($datos[0]['totalrows']);
+            return intval($rows[0]['totalrows']);
 
         }
 
@@ -199,9 +221,9 @@
             ORDER BY $order $sense 
             LIMIT $offset,$cant";           
 
-            $datos = parent::obtenerDatos($query);           
+            $rows = parent::obtenerDatos($query);           
  
-            return $datos;
+            return $rows;
 
 
         }        
@@ -295,9 +317,9 @@
             limit $init,$cant
             ";    
 
-            $datos = parent::obtenerDatos($query);           
+            $rows = parent::obtenerDatos($query);           
 
-            return $datos;
+            return $rows;
 
         }    
 
