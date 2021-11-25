@@ -12,6 +12,13 @@ class Connect{
     private $database;
     private $port;
     private $imgFolderteams;
+    private $imgFolderClubs;
+    private $imgFolderFlags;
+    private $imgFolderPlayerHeader;
+    private $imgFolderPlayerProfiles;
+    private $imgFolderUsers;
+
+
 
 
     function __construct( $dataConnection = null){
@@ -26,7 +33,12 @@ class Connect{
             $this->password = $value['password'];
             $this->database = $value['database'];
             $this->port     = $value['port'];
-            $this->imgFolderteams = $value['img_folder_team'];
+            $this->imgFolderteams = $value['img_folder_teams'];
+            $this->imgFolderClubs = $value['img_folder_clubs'];
+            $this->imgFolderFlags = $value['img_folder_flags'];
+            $this->imgFolderPlayerHeaders = $value['img_folder_player_headers'];
+            $this->imgFolderPlayerProfiles = $value['img_folder_player_profiles'];
+            $this->imgFolderUsers = $value['img_folder_users'];
         }
 
         $this->conexion = new mysqli(
@@ -119,6 +131,26 @@ class Connect{
 
     public function getImgFolderTeams(){
         return $this->imgFolderteams;
+    }
+
+    public function getImgFolderClubs(){
+        return $this->imgFolderClubs;
+    }
+
+    public function getImgFolderFlags(){
+        return $this->imgFolderFlags;
+    }
+
+    public function getImgFolderPlayerHeaders(){
+        return $this->imgFolderPlayerHeader;
+    }
+
+    public function getImgFolderPlayerProfiles(){
+        return $this->imgFolderPlayerProfiles;
+    }
+
+    public function getImgFolderUsers(){
+        return $this->imgFolderUsers;
     }
 
 
