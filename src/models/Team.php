@@ -4,7 +4,7 @@
 
     class Team extends Connect{
        
-        private $folder_team ="imgs/teams_profile/";   
+        private $folder_team ="labtest/wizard_images/teams/";    
         private $path_flag ="imgs/svg/";
         private $folder_club ="imgs/clubs_logo/";
         
