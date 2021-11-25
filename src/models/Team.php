@@ -3,8 +3,7 @@
     namespace Elitelib;
 
     class Team extends Connect{
-       
-        private $folder_team ="labtest/wizard_images/teams/";    
+          
         private $path_flag ="imgs/svg/";
         private $folder_club ="imgs/clubs_logo/";
         
@@ -33,7 +32,8 @@
 
         public function getTeams($club_id, $country_code = null){
             
-            $db = parent::getDataBase(); 
+            $db = parent::getDataBase();
+            $imgFolderTeam = parent::getImgFolderTeams();    
 
             $country = ($country_code == null)? 'GB': $country_code;
 
@@ -45,7 +45,7 @@
             d.name as division_name,
             COALESCE(players_count, 0) AS players,
             COALESCE(age_average, 0) AS age_average,                        
-            IF( ISNULL(teams.img_team), null,CONCAT('$this->folder_team', teams.img_team)) AS img_team
+            IF( ISNULL(teams.img_team), null,CONCAT('$imgFolderTeam', teams.img_team)) AS img_team
             FROM $db.teams teams
             LEFT JOIN $db.clubs c ON teams.club_id = c.id
             LEFT JOIN $db.categories ct ON teams.category_id = ct.id

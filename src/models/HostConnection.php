@@ -10,7 +10,8 @@
             "user" => "root",
             "password"   => "",
             "database" => "elites17_wizard",
-            "port"  =>"3306"
+            "port"  =>"3306",
+            "img_folder_team" => "labtest/wizard_images/teams/"
         ));
 
         public $infinity = array("connection:"=>array(

@@ -11,6 +11,7 @@ class Connect{
     private $password;
     private $database;
     private $port;
+    private $imgFolderteams;
 
 
     function __construct( $dataConnection = null){
@@ -25,6 +26,7 @@ class Connect{
             $this->password = $value['password'];
             $this->database = $value['database'];
             $this->port     = $value['port'];
+            $this->imgFolderteams = $value['img_folder_team'];
         }
 
         $this->conexion = new mysqli(
@@ -112,6 +114,11 @@ class Connect{
     //encriptar
     public function encriptar($string){
         return md5($string);
+    }
+
+
+    public function getImgFolderTeams(){
+        return $this->imgFolderteams;
     }
 
 
