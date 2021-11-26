@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
 
 
@@ -11,7 +12,9 @@ class PlayerTest extends TestCase{
 
     public function setUp(): void
     {
-        $this->player = new Elitelib\Player();
+        $host = new HostConnection();
+
+        $this->player = new Elitelib\Player($host->getParams());
     }
 
     public function testGetAvailableNationalities(){

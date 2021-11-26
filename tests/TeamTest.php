@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
 
 
@@ -11,7 +12,9 @@ class TeamTest extends TestCase{
 
     public function setUp(): void
     {
-        $this->team = new Elitelib\Team();
+        $host = new HostConnection();
+        
+        $this->team = new Elitelib\Team($host->getParams());
     }
 
     public function testGetAvailableTeamsWithFilters(){

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
 
 
@@ -11,7 +12,9 @@ class SeasonTest extends TestCase{
 
     public function setUp(): void
     {
-        $this->season = new Elitelib\Season();
+        $host = new HostConnection();
+
+        $this->season = new Elitelib\Season($host->getParams());
     }
 
     public function testGetAllSeasons()

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
 
 class ExampleTest extends TestCase
@@ -11,7 +12,9 @@ class ExampleTest extends TestCase
 
     public function setUp(): void
     {
-        $this->op = new \Elitelib\Operations();
+        $host = new HostConnection();
+
+        $this->op = new \Elitelib\Operations($host->getParams());
     }
 
     public function testAdd()

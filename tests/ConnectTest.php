@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
 
 
@@ -11,7 +12,9 @@ class ConnectTest extends TestCase{
 
     protected function setUp(): void
     {
-        $this->conn = new Elitelib\Connect();
+        $host = new HostConnection();
+
+        $this->conn = new Elitelib\Connect($host->getParams());
     }
 
     public function testDatosDeConeccion()

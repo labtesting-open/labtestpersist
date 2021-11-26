@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
-
 
 class ClubTest extends TestCase{
 
@@ -11,7 +11,9 @@ class ClubTest extends TestCase{
 
     public function setUp(): void
     {
-        $this->club = new Elitelib\Club();
+        $host = new HostConnection();
+
+        $this->club = new Elitelib\Club($host->getParams());
     }
 
     public function testGetAvailableClubs(){

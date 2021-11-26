@@ -11,12 +11,12 @@
             'password'   => '',
             'database' => 'elites17_wizard',
             'port'  =>'3306',
-            'img_folder_team' => 'labtest/wizard_images/teams/',
+            'img_folder_teams' => 'labtest/wizard_images/teams/',
             'img_folder_clubs' => 'labtest/wizard_images/clubs/',
             'img_folder_flags' => 'labtest/wizard_images/flags/',
-            'img_folder_player_header' => 'labtest/wizard_images/player_header/',
-            'img_folder_player_profile' => 'labtest/wizard_images/player_profile/',
-            'img_folder_user' => 'labtest/wizard_images/users/',
+            'img_folder_player_headers' => 'labtest/wizard_images/player_header/',
+            'img_folder_player_profiles' => 'labtest/wizard_images/player_profile/',
+            'img_folder_users' => 'labtest/wizard_images/users/',
         ));
 
         public $infinity = array("connection:"=>array(

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
 
 
@@ -11,7 +12,8 @@ class UserTest extends TestCase{
 
     public function setUp(): void
     {
-        $this->op = new Elitelib\User();
+        $host = new HostConnection();
+        $this->op = new Elitelib\User($host->getParams());
     }
 
     public function testAdd()
