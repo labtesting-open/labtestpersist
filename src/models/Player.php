@@ -3,16 +3,7 @@
     namespace Elitelib;     
 
 
-    class Player extends Connect{
-
-        private $table = "players";  
-        private $path_flag ="svg/"; 
-        private $path ="imgs/";
-        private $folder_profile ="players_profile/";  
-        private $folder_header ="players_header/"; 
-        private $folder_club ="clubs_logo/"; 
-        
-
+    class Player extends Connect{       
 
 
         public function getPlayerActionsByAction_id($player_id, $action_id){
@@ -59,6 +50,8 @@
             ){
             
             $db = parent::getDataBase();
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
+            $imgFolderFlags = $this->getImgFolderFlags();
                        
             $actionList = $this->getActionIdList($position_id);
             $actionName = $this->getActionListName($position_id);
@@ -81,7 +74,7 @@
             players.name, 
             players.surname,             
             TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS age,             
-            IF( ISNULL(players.img_profile), null,CONCAT('$this->path', '$this->folder_profile', players.img_profile)) AS img_profile_url,
+            IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url,
             positions.name as position,
             nacionalities.nacionalities_names,
             nacionalities.nacionalities_flags,
@@ -106,7 +99,7 @@
                 SELECT 
                 player_nacionality.player_id AS player_id, 
                 GROUP_CONCAT(countries.name) AS nacionalities_names,
-                GROUP_CONCAT('$this->path', '$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
+                GROUP_CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS nacionalities_flags
                 FROM $db.players_nacionalities player_nacionality
                 LEFT JOIN $db.country_codes countries
                 ON countries.country_code = player_nacionality.country_code
@@ -119,7 +112,7 @@
                 IFNULL(injuries.name,'N/D') AS injury_description,
                 players_injuries.begin AS injury_begin,
                 players_injuries.posible_end AS injury_posible_end,
-                CONCAT('$this->path','$this->path_flag','redcross.png') AS injury_img
+                CONCAT('$imgFolderFlags','redcross.png') AS injury_img
                 FROM $db.players_injuries players_injuries 
                 LEFT JOIN $db.injuries_translate injuries 
                 ON injuries.injury_id = players_injuries.injury_id and injuries.translate_code='$language_code'
@@ -206,8 +199,11 @@
             $find                     
             ){
             
-            $db = parent::getDataBase();                      
-            
+            $db = parent::getDataBase();
+
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
+            $imgFolderFlags = $this->getImgFolderFlags();
+
             $actionName = $this->getActionListName($position_id);
 
             $orderBy = (isset($order))? $order : "players.name";
@@ -225,7 +221,7 @@
             players.name, 
             players.surname, 
             players.birthdate,             
-            IF( ISNULL(players.img_profile), null,CONCAT('$this->path', '$this->folder_profile', players.img_profile)) AS img_profile_url,
+            IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url,
             positions.name as position,
             nacionalities.nacionalities_names,
             nacionalities.nacionalities_flags,
@@ -247,7 +243,7 @@
                 SELECT 
                 player_nacionality.player_id AS player_id, 
                 GROUP_CONCAT(countries.name) AS nacionalities_names,
-                GROUP_CONCAT('$this->path','$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
+                GROUP_CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS nacionalities_flags
                 FROM $db.players_nacionalities player_nacionality
                 LEFT JOIN $db.country_codes countries
                 ON countries.country_code = player_nacionality.country_code
@@ -269,6 +265,10 @@
         public function findPlayers($find, $language_code, $page = 1, $limit= 100){  
 
             $db = parent::getDataBase();
+            
+            $imgFolderFlags = $this->getImgFolderFlags();
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
+
             $init = 0;            
 
             if($page > 1){                
@@ -284,7 +284,7 @@
             players.name, 
             players.surname, 
             players.birthdate,                         
-            IF( ISNULL(players.img_profile), null,CONCAT('$this->path', '$this->folder_profile', players.img_profile)) AS img_profile_url,
+            IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url,
             clubs.name AS club_name,
             positions.name as position,
             nacionalities.nacionalities_names,
@@ -299,7 +299,7 @@
                 SELECT 
                 player_nacionality.player_id AS player_id, 
                 GROUP_CONCAT(countries.name) AS nacionalities_names,
-                GROUP_CONCAT('$this->path', '$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
+                GROUP_CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS nacionalities_flags
                 FROM $db.players_nacionalities player_nacionality
                 LEFT JOIN $db.country_codes countries
                 ON countries.country_code = player_nacionality.country_code
@@ -319,6 +319,7 @@
         public function findPlayersFast($find, $language_code, $limit = 10){  
 
             $db = parent::getDataBase();              
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
 
             $findScape = parent::scapeParameter($find);
 
@@ -329,7 +330,7 @@
             players.surname,  
             positions.name AS position_name,   
             clubs.name AS club_name,             
-            IF( ISNULL(players.img_profile), null,CONCAT('$this->path', '$this->folder_profile', players.img_profile)) AS img_profile_url
+            IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url
             FROM $db.players players 
             LEFT OUTER JOIN $db.map_position_translate positions 
             ON positions.code = players.map_position and positions.translate_code='$language_code'
@@ -350,7 +351,8 @@
 
         public function getTeamPlayersInfo($club_id, $team_id, $language_code){
             
-            $db = parent::getDataBase(); 
+            $db = parent::getDataBase();
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
 
             $query = "
             SELECT 
@@ -358,7 +360,7 @@
             p.name, 
             p.surname, 
             p.birthdate,            
-            IF( ISNULL(p.img_profile), null,CONCAT('$this->path', '$this->folder_profile', p.img_profile)) AS img_profile_url,
+            IF( ISNULL(p.img_profile), null,CONCAT('$imgFolderPlayersProfile', p.img_profile)) AS img_profile_url,
             p.nationality_id,
             p.nationality2_id,
             ps.name As position,
@@ -380,6 +382,11 @@
 
             $db = parent::getDataBase(); 
 
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
+            $imgFolderPlayersHeader = $this->getImgFolderPlayerHeaders();
+            $imgFolderFlags = $this->getImgFolderFlags();
+            $imgFolderClub = $this->getImgFolderClubs();
+
             $language_code = (isset($language_code) && $language_code != null)? $language_code: 'GB';
 
             $query = "
@@ -390,13 +397,13 @@
             pl.height,
             pl.weight,            
             TIMESTAMPDIFF(YEAR,pl.birthdate,CURDATE()) AS player_age,            
-            IF( ISNULL(pl.img_profile), null,CONCAT('$this->path', '$this->folder_profile', pl.img_profile)) AS img_profile_url,
-            IF( ISNULL(pl.img_header), null,CONCAT('$this->path', '$this->folder_header', pl.img_header)) AS img_header_url,             
+            IF( ISNULL(pl.img_profile), null,CONCAT('$imgFolderPlayersProfile', pl.img_profile)) AS img_profile_url,
+            IF( ISNULL(pl.img_header), null,CONCAT('$imgFolderPlayersHeader', pl.img_header)) AS img_header_url,             
             pl.jersey_nro,
             clubs.name AS 'club_name',            
-            IF( ISNULL(clubs.logo), null,CONCAT('$this->path','$this->folder_club', clubs.logo)) AS logo,
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,
             GROUP_CONCAT(cc.name) AS 'nationality_name',
-            GROUP_CONCAT('$this->path', '$this->path_flag',pn.country_code,'.svg') AS 'nationality_flag',
+            GROUP_CONCAT('$imgFolderFlags',pn.country_code,'.svg') AS 'nationality_flag',
             ofi.name AS 'outfitter_name',
             ft.name AS 'main_foot',      
             pt.name AS 'name_main_position',
@@ -579,7 +586,9 @@
             $orderSense = null
         )
         {
-            $db = parent::getDataBase();   
+            $db = parent::getDataBase();
+
+            $imgFolderFlags = $this->getImgFolderFlags();   
             
             $whereSubQuery="";
 
@@ -628,7 +637,7 @@
             SELECT  
             nacionalities.country_code,
             nacionalities.country_name,
-            CONCAT('$this->path', '$this->path_flag',nacionalities.country_code,'.svg') AS country_flags
+            CONCAT('$imgFolderFlags',nacionalities.country_code,'.svg') AS country_flags
             FROM  $db.players players
             INNER JOIN (
                 SELECT
@@ -739,15 +748,23 @@
             $whereNationality,
             $whereSecondPositions,
             $joinSecondPositions,
-            $where
+            $where,
+            $language_code
         )
         {
+            
+            $language_code = (isset($language_code))? $language_code: 'GB';
+
+            $imgFolderClub = $this->getImgFolderClubs();
+            $imgFolderFlags = $this->getImgFolderFlags();
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
+
             $query = "
             SELECT  
             players.id AS player_id,
             players.name AS player_name,
             players.surname AS player_surname,
-            IF( ISNULL(players.img_profile), null,CONCAT('imgs/', 'players_profile/', players.img_profile)) AS img_profile_url,
+            IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url,
             TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age,
             players.height AS player_height,
             players.weight AS player_weight,
@@ -760,7 +777,7 @@
             second_position.second_positions_names AS second_positions_names, 
 			players.club_id,
             clubs.name AS club_name,
-            IF( ISNULL(clubs.logo), null,CONCAT('imgs/', 'clubs_logo/', clubs.logo)) AS club_logo,
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,            
             players.team_id,  
             teams.team_name AS team_name,
             countries.name AS country_name,
@@ -784,7 +801,7 @@
                   SELECT 
                   nacionalities.player_id,
                   group_concat(nacionalities.country_code) AS nationalities_codes ,
-                  group_concat( CONCAT('$this->path', '$this->path_flag', nacionalities.country_code,'.svg')) AS nationalities_flags,
+                  group_concat( CONCAT('$imgFolderFlags', nacionalities.country_code,'.svg')) AS nationalities_flags,
                   group_concat( country_codes.name) AS nationalities_names
                   FROM $db.players_nacionalities nacionalities 
                   LEFT JOIN $db.country_codes country_codes
@@ -807,7 +824,7 @@
 					group_concat(map_position_t.name) AS map_positions_names
 					FROM $db.player_map_position_secondary secondary_positions
 					LEFT JOIN $db.map_position_translate map_position_t
-					ON  map_position_t.code = secondary_positions.position_code AND map_position_t.translate_code='ES'             
+					ON  map_position_t.code = secondary_positions.position_code AND map_position_t.translate_code='$language_code'             
 					GROUP BY secondary_positions.player_id
 				) AS second_positions_full ON second_positions_full.player_id = secondary_positions.player_id
 				$whereSecondPositions
@@ -1011,7 +1028,8 @@
                 $filters["whereNationality"],
                 $filters["whereSecondPositions"],
                 $filters["joinSecondPositions"], 
-                $filters["where"]
+                $filters["where"],
+                $language_code
             );
 
             $order = $filters["order"];
@@ -1077,7 +1095,8 @@
                 $filters["whereNationality"],
                 $filters["whereSecondPositions"],
                 $filters["joinSecondPositions"], 
-                $filters["where"]
+                $filters["where"],
+                $language_code
             );          
 
             $query = "SELECT count(*) AS totalrows FROM (

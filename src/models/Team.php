@@ -2,11 +2,7 @@
 
     namespace Elitelib;
 
-    class Team extends Connect{
-          
-        private $path_flag ="imgs/svg/";
-        private $folder_club ="imgs/clubs_logo/";
-        
+    class Team extends Connect{        
         
         public function getTeam($team_id)
         {
@@ -33,6 +29,7 @@
         public function getTeams($club_id, $country_code = null){
             
             $db = parent::getDataBase();
+
             $imgFolderTeam = parent::getImgFolderTeams();    
 
             $country = ($country_code == null)? 'GB': $country_code;
@@ -78,7 +75,7 @@
             team_id,
             FORMAT(AVG( TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) ), 0) AS age_avg, 
             COUNT(DISTINCT id) AS players_count
-            FROM elites17_wizard.players
+            FROM $db.players
             WHERE players.club_id=$club_id
             GROUP BY team_id" ;        
 
@@ -243,6 +240,9 @@
 
             $db = parent::getDataBase();
 
+            $imgFolderClub = $this->getImgFolderClubs();
+            $imgFolderFlags = $this->getImgFolderFlags();
+
             $init = 0;            
 
             if($page > 1){                
@@ -292,24 +292,24 @@
             clubs.id AS club_id,
             IFNULL(clases.name,clubs.name) AS team_name,            
             clubs.name AS club_name,            
-            IF( ISNULL(clubs.logo), null,CONCAT('$this->folder_club', clubs.logo)) AS logo, 
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo, 
             categories.name AS category_name,
             divisions.name AS division_name,
             CONCAT(countries.name) AS country_name,
-            CONCAT('$this->path_flag',countries.country_code,'.svg') AS country_flag,
+            CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS country_flag,
             COALESCE(players_count, 0) AS squad
-            FROM elites17_wizard.teams teams
-            INNER JOIN  elites17_wizard.clubs clubs ON clubs.id = teams.club_id
-            INNER JOIN  elites17_wizard.categories categories ON categories.id = teams.category_id
-            INNER JOIN  elites17_wizard.division divisions ON divisions.id = teams.division_id
-            INNER JOIN  elites17_wizard.country_codes countries ON countries.country_code = clubs.country_code
-            LEFT JOIN  elites17_wizard.division_class_translate clases 
+            FROM $db.teams teams
+            INNER JOIN  $db.clubs clubs ON clubs.id = teams.club_id
+            INNER JOIN  $db.categories categories ON categories.id = teams.category_id
+            INNER JOIN  $db.division divisions ON divisions.id = teams.division_id
+            INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
+            LEFT JOIN  $db.division_class_translate clases 
             ON clases.id = divisions.division_class_id and clases.country_code='$translate_code'
             LEFT JOIN (
             SELECT   
             players.team_id AS team_id
             ,COUNT(players.id) AS players_count		
-            FROM  elites17_wizard.players players   
+            FROM  $db.players players   
             GROUP by players.team_id
             ) AS plantilla ON plantilla.team_id = teams.id      
             $where
@@ -330,17 +330,21 @@
            $translate_code
         )
         {
+            
+            $imgFolderClub = $this->getImgFolderClubs();
+            $imgFolderFlags = $this->getImgFolderFlags();
+
             $query ="
             SELECT 
             teams.id AS team_id,
             clubs.id AS club_id,
             IFNULL(clases.name,clubs.name) AS team_name,            
             clubs.name AS club_name,            
-            IF( ISNULL(clubs.logo), null,CONCAT('$this->folder_club', clubs.logo)) AS logo, 
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo, 
             categories.name AS category_name,
             divisions.name AS division_name,
             CONCAT(countries.name) AS country_name,
-            CONCAT('$this->path_flag',countries.country_code,'.svg') AS country_flag,
+            CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS country_flag,
             COALESCE(players_count, 0) AS squad
             FROM $db.teams teams
             INNER JOIN  $db.clubs clubs ON clubs.id = teams.club_id

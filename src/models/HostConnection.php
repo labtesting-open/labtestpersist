@@ -16,7 +16,7 @@
             'img_folder_flags' => 'labtest/wizard_images/flags/',
             'img_folder_player_header' => 'labtest/wizard_images/player_header/',
             'img_folder_player_profile' => 'labtest/wizard_images/player_profile/',
-            'img_folder_user' => 'labtest/wizard_images/user/',
+            'img_folder_user' => 'labtest/wizard_images/users/',
         ));
 
         public $infinity = array("connection:"=>array(

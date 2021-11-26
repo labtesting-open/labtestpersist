@@ -2,10 +2,7 @@
 
     namespace Elitelib;  
 
-    class Club extends Connect{
-               
-        private $path_flag ="imgs/svg/";
-        private $folder_club="imgs/clubs_logo/";  
+    class Club extends Connect{          
 
 
         public function getClubsByFilters(
@@ -18,6 +15,9 @@
             ){  
 
             $db = parent::getDataBase();
+            
+            $imgFolderClub = $this->getImgFolderClubs();
+            $imgFolderFlag = $this->getImgFolderFlags();
 
             $init = 0;            
 
@@ -30,10 +30,10 @@
             SELECT
             clubs.id,
             clubs.name,            
-            IF( ISNULL(clubs.logo), null,CONCAT('$this->folder_club', clubs.logo)) AS logo,
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,
             clubs.stadium,
             CONCAT(countries.name) AS country_name,
-            CONCAT('$this->path_flag',countries.country_code,'.svg') AS country_flag,
+            CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS country_flag,
             COALESCE(players_count, 0) AS plantilla,
             COALESCE(teams_count, 0) AS teams_cant
             FROM  $db.clubs clubs
@@ -80,10 +80,10 @@
                 SELECT 
                 clubs.id,
                 clubs.name,
-                IF( ISNULL(clubs.logo), null,CONCAT('$this->folder_club', clubs.logo)) AS logo,
+                IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,
                 clubs.stadium,
                 CONCAT(countries.name) AS country_name,
-                CONCAT('$this->path_flag',countries.country_code,'.svg') AS country_flag
+                CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS country_flag
                 FROM $db.teams teams
                 INNER JOIN $db.clubs clubs ON clubs.id = teams.club_id
                 INNER JOIN $db.division divisions ON divisions.id = teams.division_id
@@ -109,6 +109,9 @@
         public function findClubs($find, $language_code, $page = 1, $limit=100){  
 
             $db = parent::getDataBase();
+            $imgFolderClub = $this->getImgFolderClubs();
+            $imgFolderFlag = $this->getImgFolderFlags();
+
             $init = 0;
             
 
@@ -123,11 +126,11 @@
             SELECT
             clubs.id,
             clubs.name,
-            IF( ISNULL(clubs.logo), null,CONCAT('$this->folder_club', clubs.logo)) AS logo, 
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo, 
             clubs.stadium,
             clubs.since,
             CONCAT(countries.name) AS nacionalities_names,
-			CONCAT('$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
+			CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS nacionalities_flags
             FROM $db.clubs clubs
             LEFT JOIN $db.country_codes countries
 			ON countries.country_code = clubs.country_code
@@ -144,6 +147,8 @@
         public function findClubsFast($find, $language_code, $limit = 10){  
 
             $db = parent::getDataBase();
+            $imgFolderClub = $this->getImgFolderClubs();
+            $imgFolderFlag = $this->getImgFolderFlags();
 
             $findScape = parent::scapeParameter($find);
 
@@ -151,9 +156,9 @@
             SELECT
             clubs.id,
             clubs.name,
-            IF( ISNULL(clubs.logo), null,CONCAT('$this->folder_club', clubs.logo)) AS logo,              
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,              
             CONCAT(countries.name) AS nacionalities_names,
-			CONCAT('$this->path_flag',countries.country_code,'.svg') AS nacionalities_flags
+			CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS nacionalities_flags
             FROM $db.clubs clubs
             LEFT JOIN $db.country_codes countries
 			ON countries.country_code = clubs.country_code
@@ -170,12 +175,14 @@
         public function getBasicInfo($club_id){
             
             $db = parent::getDataBase(); 
+            $imgFolderClub = $this->getImgFolderClubs();
+            
 
             $query = "
             SELECT
             id,
             name,
-            IF( ISNULL(logo), null,CONCAT('$this->folder_club', logo)) AS logo,
+            IF( ISNULL(logo), null,CONCAT('$imgFolderClub', logo)) AS logo,
             stadium,
             since,
             country_code,
@@ -256,11 +263,12 @@
         public function getAllCountries(){
 
             $db = parent::getDataBase(); 
+            $imgFolderFlag = $this->getImgFolderFlags();
 
             $query = "
             SELECT 
             countries.name as name,
-            CONCAT('$this->path_flag',countries.country_code,'.svg') AS country_flag,
+            CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS country_flag,
             countries.continent_code 
             FROM  $db.country_codes countries 
             ORDER BY countries.name" ;        
@@ -279,6 +287,7 @@
             ){
             
             $db = parent::getDataBase(); 
+            $imgFolderFlag = $this->getImgFolderFlags();
 
             $where = "";
 
@@ -306,11 +315,11 @@
             SELECT   
             DISTINCT(clubs.country_code) AS country_code,
             countries.name as name,
-            CONCAT('$this->path_flag',countries.country_code,'.svg') AS country_flag,
+            CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS country_flag,
             countries.continent_code 
             FROM  $db.clubs clubs            
             INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code                       
-            INNER JOIN elites17_wizard.teams teams ON teams.club_id = clubs.id
+            INNER JOIN $db.teams teams ON teams.club_id = clubs.id
             $where
             ORDER BY countries.name" ;        
 
@@ -359,7 +368,7 @@
             divisions.name,            
             clubs.country_code,
             teams.category_id
-            FROM elites17_wizard.teams teams
+            FROM $db.teams teams
             INNER JOIN $db.clubs clubs ON clubs.id = teams.club_id
             INNER JOIN $db.division divisions ON divisions.id = teams.division_id  
             INNER JOIN $db.country_codes countries ON countries.country_code = clubs.country_code         
@@ -383,7 +392,9 @@
             $orderSense = null
         ){
             
-            $db = parent::getDataBase();  
+            $db = parent::getDataBase();
+            
+            $imgFolderClub = $this->getImgFolderClubs();  
             
             $whereSubQuery="";
 
@@ -432,7 +443,7 @@
             SELECT
             clubs.id,            
             clubs.name,
-            CONCAT('$this->folder_club', clubs.logo) AS logo
+            CONCAT('$imgFolderClub', clubs.logo) AS logo
             FROM  $db.players players
             INNER JOIN (
                 SELECT

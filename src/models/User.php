@@ -5,14 +5,10 @@
 
     class User extends Connect{
 
-        private $table = "users";
-        private $user_path = "imgs/users/";
-        
-
-
         public function listUsers($pagina = 1){
 
             $db = parent::getDataBase();
+
             $inicio = 0;
             $cantidad = 100;
 
@@ -33,7 +29,7 @@
             p.service_admin_own_club,
             p.service_info_others_clubs,
             p.service_info_others_players
-            FROM $db.$this->table u 
+            FROM $db.users u 
             LEFT OUTER JOIN $db.plans p ON u.plan_id = p.id 
             limit $inicio,$cantidad";
 
@@ -47,7 +43,9 @@
 
         public function getUserInfo($id){
 
-            $db = parent::getDataBase();           
+            $db = parent::getDataBase();
+            
+            $imgFileUsers = $this->getImgFolderUsers();
             
             $query = "
             SELECT            
@@ -58,10 +56,10 @@
             u.country_code,
             p.name as plan_name,           
             IF( ISNULL(u.img_perfil_url), null,
-				CONCAT('$this->user_path',u.id,'/',u.img_perfil_url)
+				CONCAT('$imgFileUsers',u.img_perfil_url)
             ) AS img_perfil_url,           
             IF(u.active=1,'true','false') as active          
-            FROM $db.$this->table u 
+            FROM $db.users u 
             LEFT OUTER JOIN $db.plans p ON u.plan_id = p.id 
             WHERE u.id=$id";
 
