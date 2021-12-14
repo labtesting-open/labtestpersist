@@ -85,6 +85,60 @@
 
         }
         
+        
+        public function getAllCategoriesFromCountry($country_code = null)
+        {
+
+            $db = parent::getDataBase(); 
+
+            $where = "";
+
+            if($country_code != null){
+                $where.=( empty($where))?' WHERE ':' and ';
+                $where.= " categories.country_code = '$country_code'";
+            }   
+
+            $query = "
+            SELECT 
+            categories.id AS category_id,
+            categories.name
+            FROM $db.categories categories
+            $where
+            ORDER BY categories.order_class" ;
+
+            $rows = parent::obtenerDatos($query);    
+            
+            return $rows;
+
+        }
+
+
+        public function getAllDivisionsFromCountry($country_code = null)
+        {
+
+            $db = parent::getDataBase(); 
+
+            $where = "";
+
+            if($country_code != null){
+                $where.=( empty($where))?' WHERE ':' and ';
+                $where.= " division.country_code = '$country_code'";
+            }   
+
+            $query = "
+            SELECT 
+            division.id AS division_id,
+            division.name 
+            FROM $db.division division
+            $where
+            ORDER BY division.division_class_id" ;
+
+            $rows = parent::obtenerDatos($query);    
+            
+            return $rows;
+
+        }
+
 
         public function getAvailableCategories(
             $continent_code=null, 
