@@ -86,24 +86,17 @@
         }
         
         
-        public function getAllCategoriesFromCountry($country_code = null)
+        public function getAllCategories()
         {
 
-            $db = parent::getDataBase(); 
-
-            $where = "";
-
-            if($country_code != null){
-                $where.=( empty($where))?' WHERE ':' and ';
-                $where.= " categories.country_code = '$country_code'";
-            }   
+            $db = parent::getDataBase();            
 
             $query = "
             SELECT 
             categories.id AS category_id,
             categories.name
             FROM $db.categories categories
-            $where
+            
             ORDER BY categories.order_class" ;
 
             $rows = parent::obtenerDatos($query);    
