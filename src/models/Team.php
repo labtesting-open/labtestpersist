@@ -8,12 +8,14 @@
         {
             $db = parent::getDataBase();
 
+            $imgFolderTeam = parent::getImgFolderTeams();
+
             $query="SELECT  
             teams.team_name,
             teams.category_id,
             teams.division_id,
             club.country_code,
-            teams.img_team
+            IF( ISNULL(teams.img_team), null,CONCAT('$imgFolderTeam', teams.img_team)) AS img_team           
             FROM $db.teams teams
             INNER JOIN $db.clubs club 
             ON teams.club_id = club.id
