@@ -92,7 +92,7 @@
         }
 
 
-        public function getAllDivisionsFromCountry($country_code = null)
+        public function getAllDivisions($country_code = null, $category_id = null)
         {
 
             $db = parent::getDataBase(); 
@@ -102,7 +102,12 @@
             if($country_code != null){
                 $where.=( empty($where))?' WHERE ':' and ';
                 $where.= " division.country_code = '$country_code'";
-            }   
+            }
+
+            if($category_id != null){
+                $where.=( empty($where))?' WHERE ':' and ';
+                $where.= " division.category_id = $category_id";
+            }
 
             $query = "
             SELECT 
@@ -116,27 +121,7 @@
             
             return $rows;
 
-        }
-
-
-        public function getAllDivisionsFromCategory($category_id)
-        {
-
-            $db = parent::getDataBase();         
-
-            $query = "
-            SELECT 
-            division.id AS division_id,
-            division.name 
-            FROM $db.division division
-            WHERE division.category_id = $category_id
-            ORDER BY division.division_class_id" ;
-
-            $rows = parent::obtenerDatos($query);    
-            
-            return $rows;
-
-        }
+        }    
        
 
 

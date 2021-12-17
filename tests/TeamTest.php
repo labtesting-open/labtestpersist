@@ -131,7 +131,7 @@ class TeamTest extends TestCase{
         
         $teamInfo = $this->team->getTeam($team_id);
 
-        var_dump($teamInfo);
+        //var_dump($teamInfo);
 
         $this->assertFalse(empty($teamInfo));
 
