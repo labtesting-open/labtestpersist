@@ -10,7 +10,8 @@
 
             $imgFolderTeam = parent::getImgFolderTeams();
 
-            $query="SELECT  
+            $query="SELECT
+            teams.club_id,  
             teams.team_name,
             teams.category_id,
             teams.division_id,
