@@ -15,11 +15,14 @@
             teams.team_name,
             teams.category_id,
             teams.division_id,
+            categories.name as category_name,
+            divisions.name as division_name,
             club.country_code,
             IF( ISNULL(teams.img_team), null,CONCAT('$imgFolderTeam', teams.img_team)) AS img_team           
             FROM $db.teams teams
-            INNER JOIN $db.clubs club 
-            ON teams.club_id = club.id
+            INNER JOIN $db.clubs club ON teams.club_id = club.id
+            LEFT JOIN $db.categories categories ON categories.id = teams.category_id
+            LEFT JOIN $db.division divisions ON divisions.id = teams.division_id
             WHERE teams.id=$team_id";
 
             $rows = parent::obtenerDatos($query);           
