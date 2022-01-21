@@ -69,7 +69,7 @@ class DivisionTest extends TestCase{
 
         $data_division = $this->division->getAllDivisions($country_code, $category_id);
         
-        var_dump($data_division);
+        //var_dump($data_division);
 
         $this->assertFalse(empty($data_division)); 
       
