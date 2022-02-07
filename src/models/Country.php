@@ -37,7 +37,7 @@
         }
 
 
-        public function getAvailableCountries(
+        public function getAvailableCountriesWithTeams(
             $continent_code = null, 
             $country_code = null, 
             $category_id = null,
