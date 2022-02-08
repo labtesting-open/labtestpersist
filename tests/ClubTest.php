@@ -45,4 +45,62 @@ class ClubTest extends TestCase{
     }
 
 
+    public function testGetAvailableClubsWithFilters(){
+
+        $continent_code = null;
+        $country_code = 'AR';
+        $order_field = null;
+        $order_sense = null;
+        $page = 1;
+        $limit = 10;
+        $language_code = null;
+
+       $data = $this->club->getAvailableClubsWithFilters(
+        $continent_code, 
+        $country_code, 
+        $order_field,
+        $order_sense,
+        $page,
+        $limit,
+        $language_code
+       );
+        
+        //var_dump($data);
+
+        $this->assertFalse(empty($data)); 
+      
+    }
+
+
+    public function testGetAvailableClubsWithFiltersTotalRows(){
+
+        $continent_code = null;
+        $country_code = 'AR';                 
+        $order_field = null;
+        $order_sense = null;
+        $page = 1;
+        $limit = 100;
+        $language_code = null;
+
+       $pagesRows = $this->club->getAvailableClubsWithFiltersTotalRows(
+        $continent_code, 
+        $country_code,                       
+        $order_field,
+        $order_sense,
+        $page,
+        $limit,
+        $language_code
+       );
+        
+       //$totalPages = ceil($pagesRows / $limit);
+
+       //echo "total rows: $pagesRows - total pages: $totalPages";
+
+       $this->assertFalse(empty($pagesRows)); 
+      
+    }
+
+
+
+
 }

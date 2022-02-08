@@ -40,21 +40,21 @@ class CountryTest extends TestCase{
     }
 
 
-    public function testGetAvailableCountries(){  
+    public function testGetAvailableCountriesWithTeams(){  
         
         $continent_code=null;
         $country_code=null;
         $category_id = null;
         $division_id = null;
 
-        $data_country = $this->country->getAvailableCountries(
+        $data_country = $this->country->getAvailableCountriesWithTeams(
             $continent_code,
             $country_code,
             $category_id,
             $division_id
         );
         
-        var_dump($data_country);
+        //var_dump($data_country);
 
         $this->assertFalse(empty($data_country)); 
       
