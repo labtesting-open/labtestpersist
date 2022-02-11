@@ -9,6 +9,7 @@
             $db = parent::getDataBase();
 
             $imgFolderTeam = parent::getImgFolderTeams();
+            $imgFolderFlags = $this->getImgFolderFlags();
 
             $query="SELECT
             teams.club_id,  
@@ -17,10 +18,12 @@
             teams.division_id,
             categories.name as category_name,
             divisions.name as division_name,
-            club.country_code,
+            countries.name AS country_name,
+            CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS country_flag,
             IF( ISNULL(teams.img_team), null,CONCAT('$imgFolderTeam', teams.img_team)) AS img_team           
             FROM $db.teams teams
             INNER JOIN $db.clubs club ON teams.club_id = club.id
+            LEFT JOIN $db.country_codes countries ON countries.country_code = club.country_code
             LEFT JOIN $db.categories categories ON categories.id = teams.category_id
             LEFT JOIN $db.division divisions ON divisions.id = teams.division_id
             WHERE teams.id=$team_id";

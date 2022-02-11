@@ -179,8 +179,7 @@
             $query="
             SELECT 
             division.name as division_name,
-            CONCAT('$imgFolderDivision',division.logo,'.svg') AS country_flag,
-            division.logo
+            IF( ISNULL(division.logo), null,CONCAT('$imgFolderDivision', division.logo)) AS logo                   
             FROM
             $db.teams team
             INNER JOIN $db.division division ON division.id = team.division_id
