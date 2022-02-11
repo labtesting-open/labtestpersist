@@ -288,6 +288,8 @@
 
         }    
 
+        
+
 
         private function getQueryTeamsWithFilters(
            $db,
