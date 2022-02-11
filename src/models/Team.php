@@ -8,7 +8,7 @@
         {
             $db = parent::getDataBase();
 
-            $imgFolderTeam = parent::getImgFolderTeams();
+            $imgFolderClubs = parent::getImgFolderClubs();
             $imgFolderFlags = $this->getImgFolderFlags();
 
             $query="SELECT
@@ -20,7 +20,7 @@
             divisions.name as division_name,
             countries.name AS country_name,
             CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS country_flag,
-            IF( ISNULL(teams.img_team), null,CONCAT('$imgFolderTeam', teams.img_team)) AS img_team           
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClubs', clubs.logo)) AS logo,           
             FROM $db.teams teams
             INNER JOIN $db.clubs club ON teams.club_id = club.id
             LEFT JOIN $db.country_codes countries ON countries.country_code = club.country_code
@@ -38,9 +38,9 @@
         public function getTeams($club_id, $country_code = null){
             
             $db = parent::getDataBase();
-
-            $imgFolderTeam = parent::getImgFolderTeams();
-            $imgFolderFlags = $this->getImgFolderFlags();    
+           
+            $imgFolderFlags = $this->getImgFolderFlags();
+            $imgFolderClubs = parent::getImgFolderClubs();   
 
             $country = ($country_code == null)? 'GB': $country_code;
 
@@ -54,7 +54,7 @@
             COALESCE(age_average, 0) AS age_average,
             CONCAT(countries.name) AS country_name,
             CONCAT('$imgFolderFlags',c.country_code,'.svg') AS country_flag,                        
-            IF( ISNULL(teams.img_team), null,CONCAT('$imgFolderTeam', teams.img_team)) AS img_team
+            IF( ISNULL(c.logo), null,CONCAT('$imgFolderClubs', c.logo)) AS logo,
             FROM $db.teams teams            
             LEFT JOIN $db.clubs c ON teams.club_id = c.id
             LEFT JOIN elites17_wizard.country_codes countries ON countries.country_code = c.country_code
