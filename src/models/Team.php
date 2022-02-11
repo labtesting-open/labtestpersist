@@ -36,7 +36,8 @@
             
             $db = parent::getDataBase();
 
-            $imgFolderTeam = parent::getImgFolderTeams();    
+            $imgFolderTeam = parent::getImgFolderTeams();
+            $imgFolderFlags = $this->getImgFolderFlags();    
 
             $country = ($country_code == null)? 'GB': $country_code;
 
@@ -46,11 +47,14 @@
             IF( ISNULL(teams.team_name), clases.name ,teams.team_name) AS team_name, 
             ct.name as category_name,
             d.name as division_name,
-            COALESCE(players_count, 0) AS players,
-            COALESCE(age_average, 0) AS age_average,                        
+            COALESCE(players_count, 0) AS squad,
+            COALESCE(age_average, 0) AS age_average,
+            CONCAT(countries.name) AS country_name,
+            CONCAT('$imgFolderFlags',c.country_code,'.svg') AS country_flag,                        
             IF( ISNULL(teams.img_team), null,CONCAT('$imgFolderTeam', teams.img_team)) AS img_team
-            FROM $db.teams teams
+            FROM $db.teams teams            
             LEFT JOIN $db.clubs c ON teams.club_id = c.id
+            LEFT JOIN elites17_wizard.country_codes countries ON countries.country_code = c.country_code
             LEFT JOIN $db.categories ct ON teams.category_id = ct.id
             LEFT JOIN $db.division d ON teams.division_id = d.id
             LEFT JOIN $db.division_class_translate clases ON clases.id = d.division_class_id and clases.country_code='$country'
