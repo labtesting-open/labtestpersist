@@ -16,6 +16,19 @@ class ClubTest extends TestCase{
         $this->club = new Elitelib\Club($host->getParams());
     }
 
+
+    public function testGetBasicInfo()
+    {
+        $club_id = 1;
+
+        $data_club = $this->club->getBasicInfo($club_id);
+        
+        //var_dump($data_club);
+
+        $this->assertFalse(empty($data_club)); 
+    }
+
+
     public function testGetAvailableClubs(){
 
         $continent_code= null; 

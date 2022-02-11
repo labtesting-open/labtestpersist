@@ -226,11 +226,11 @@
                 FROM  $db.teams teams   
                 where teams.club_id = 1
                 )AS teams ON teams.club_id = clubs.id    
-            where id=$club_id";        
+            where clubs.id=$club_id";        
 
             $datos = parent::obtenerDatos($query);           
 
-            return (count($datos) > 0)? $datos[0]: null;
+            return $datos;
 
         }      
 
