@@ -17,6 +17,7 @@ class Connect{
     private $imgFolderPlayerHeader;
     private $imgFolderPlayerProfiles;
     private $imgFolderUsers;
+    private $imgFolderDivision;
 
 
 
@@ -39,6 +40,7 @@ class Connect{
             $this->imgFolderPlayerHeaders = $value['img_folder_player_headers'];
             $this->imgFolderPlayerProfiles = $value['img_folder_player_profiles'];
             $this->imgFolderUsers = $value['img_folder_users'];
+            $this->imgFolderDivision = $value['img_folder_division'];
         }
 
         $this->conexion = new mysqli(
@@ -151,6 +153,10 @@ class Connect{
 
     public function getImgFolderUsers(){
         return $this->imgFolderUsers;
+    }
+
+    public function getImgFolderDivision(){
+        return $this->imgFolderDivision;
     }
 
 

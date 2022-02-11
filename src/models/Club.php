@@ -174,16 +174,16 @@
         public function getAvailablesDivisionsForClub($club_id)
         {
             $db = parent::getDataBase(); 
-            $imgFolderDivisionLogo = $this->getImgFolderClubs();
+            $imgFolderDivision = $this->getImgFolderDivision();
 
             $query="
             SELECT 
             division.name as division_name,
-            CONCAT('$imgFolderDivisionLogo',division.logo,'.svg') AS country_flag,
+            CONCAT('$imgFolderDivision',division.logo,'.svg') AS country_flag,
             division.logo
             FROM
-            elites17_wizard.teams team
-            INNER JOIN elites17_wizard.division division ON division.id = team.division_id
+            $db.teams team
+            INNER JOIN $db.division division ON division.id = team.division_id
             WHERE team.club_id=$club_id";
 
             $datos = parent::obtenerDatos($query);           
