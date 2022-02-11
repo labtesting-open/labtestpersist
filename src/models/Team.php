@@ -288,7 +288,7 @@
 
         }    
 
-        
+
 
 
         private function getQueryTeamsWithFilters(
@@ -581,6 +581,12 @@
             $affected = parent::nonQuery($query);
  
             return $affected;     
+        }
+
+
+        public function tests()
+        {
+            return null;
         }
 
 
