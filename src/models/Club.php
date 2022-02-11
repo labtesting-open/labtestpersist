@@ -169,37 +169,64 @@
 
             return $datos;
 
-        }      
+        }
+        
+        public function getAvailablesDivisionsForClub($club_id)
+        {
+            $db = parent::getDataBase(); 
+            $imgFolderDivisionLogo = $this->getImgFolderClubs();
+
+            $query="
+            SELECT 
+            division.name as division_name,
+            CONCAT('$imgFolderDivisionLogo',division.logo,'.svg') AS country_flag,
+            division.logo
+            FROM
+            elites17_wizard.teams team
+            INNER JOIN elites17_wizard.division division ON division.id = team.division_id
+            WHERE team.club_id=$club_id";
+
+            $datos = parent::obtenerDatos($query);           
+
+            return $datos;
+
+        }
 
 
         public function getBasicInfo($club_id){
             
             $db = parent::getDataBase(); 
             $imgFolderClub = $this->getImgFolderClubs();
-            
+            $imgFolderFlags = $this->getImgFolderFlags();
 
             $query = "
             SELECT
-            id,
-            name,
-            IF( ISNULL(logo), null,CONCAT('$imgFolderClub', logo)) AS logo,
-            stadium,
-            since,
-            country_code,
-            (
+            clubs.id,
+            clubs.name club_name, 
+            clubs.stadium,
+            clubs.since,
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,             
+            CONCAT(countries.name) AS country_name,
+            CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS country_flag,
+            COALESCE(players_count, 0) AS squad,
+            COALESCE(teams_count, 0) AS teams_cant
+            FROM  $db.clubs clubs
+            INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code
+            LEFT JOIN (
                 SELECT   
-                COUNT(players.id) AS players_count		
+                players.club_id AS club_id
+                ,COUNT(players.id) AS players_count		
                 FROM  $db.players players   
-                WHERE players.club_id=$club_id
-            ) AS players_cant,
-            (
+                where players.club_id = 1
+            ) AS plantilla ON plantilla.club_id = clubs.id
+            LEFT JOIN (
                 SELECT   
+                teams.club_id AS club_id,
                 COUNT(teams.id) AS teams_count		
                 FROM  $db.teams teams   
-                WHERE teams.club_id=$club_id
-            ) AS teams_cant
-            FROM $db.clubs            
-            where id=$club_id" ;        
+                where teams.club_id = 1
+                )AS teams ON teams.club_id = clubs.id    
+            where id=$club_id";        
 
             $datos = parent::obtenerDatos($query);           
 
