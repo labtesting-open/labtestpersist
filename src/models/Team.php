@@ -10,14 +10,17 @@
 
             $imgFolderClubs = parent::getImgFolderClubs();
             $imgFolderFlags = $this->getImgFolderFlags();
+            $imgFolderDivision = $this->getImgFolderDivision();
 
             $query="SELECT
-            teams.club_id,  
+            teams.club_id,
+            club.name AS club_name,  
             teams.team_name,
             teams.category_id,
             teams.division_id,
             categories.name as category_name,
             divisions.name as division_name,
+            IF( ISNULL(divisions.logo), null,CONCAT('$imgFolderDivision', divisions.logo)) AS division_logo,
             countries.name AS country_name,
             CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS country_flag,
             IF( ISNULL(club.logo), null,CONCAT('$imgFolderClubs', club.logo)) AS club_logo          
