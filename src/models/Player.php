@@ -85,7 +85,8 @@
 
 
             $query = "
-            SELECT 
+            SELECT
+            players.id AS player_id, 
             players.name AS player_name,
             players.surname AS player_surname,
             CONCAT(players.name, ' ',players.surname) AS fullname,
