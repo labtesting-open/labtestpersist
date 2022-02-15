@@ -669,7 +669,7 @@
 
             switch ($category_id) {
                 case 1://goalkeeper
-                    return array('34', '30','31', '32', '33'); 
+                    return array('10', '30','35', '32', '33'); 
 
                 case 2://defense
                     return array('10','1', '4', '32', '33');         
@@ -713,7 +713,7 @@
             switch ($category_id) {
 
                 case 1:
-                    return array('goals_received', 'saves','shots_received'); 
+                    return array('goals', 'saves','penalties_saved'); 
                 case 2:
                     return array('goals','tackles_success', 'fouls');                   
                 case 3:
