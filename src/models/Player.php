@@ -36,7 +36,179 @@
 
             return $datos;
 
-        }        
+        }
+        
+        
+        public function getTeamPlayersInfoAndStaticsByPositionV2(
+            $club_id, 
+            $team_id, 
+            $season_id,            
+            $position_id,
+            $language_code = null,
+            $order = null,
+            $order_sense = null,
+            $find = null                     
+            ){
+            
+            $db = parent::getDataBase();
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
+            $imgFolderFlags = $this->getImgFolderFlags();
+                       
+            $actionList = $this->getActionIdList($position_id);
+            $actionName = $this->getActionListName($position_id);
+
+            $language_code = (isset($language_code) && $language_code != null)? $language_code: 'GB';            
+
+            switch ($order) {
+                
+                case 'player.name':
+                    $orderfields ="fullname";
+                    break;
+                case 'player_age':
+                    $orderfields ="players.age";
+                    break;
+                case 'matches_played':
+                        $orderfields ="matches_played";
+                        break;
+                default:
+                    $orderfields ="fullname";
+            }            
+
+            $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
+            
+            if( isset($find) && !empty($find)){
+                $findScape = parent::scapeParameter($find);                
+                $findOut = " and ( LOWER(players.name) like LOWER('%$findScape%') OR LOWER(players.surname) like LOWER('%$findScape%') )";
+            }else{
+                $findOut = '';
+            }
+
+
+            $query = "
+            SELECT 
+            players.name AS player_name,
+            players.surname AS player_surname,
+            CONCAT(players.name, ' ',players.surname) AS fullname,
+            TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age,            
+            IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url,
+            positions.name as position,
+            colorposition.color_hexa,
+            nacionalities.nacionalities_names,
+            nacionalities.nacionalities_flags,
+            COALESCE(matches_played, 0) AS matches_played,
+            if( COALESCE(matches_played, 0) = 0, '-', COALESCE(action1, 0) ) AS $actionName[0],
+            if( COALESCE(matches_played, 0) = 0, '-', COALESCE(action2, 0) ) AS $actionName[1], 
+            if( COALESCE(matches_played, 0) = 0, '-', COALESCE(action3, 0) ) AS $actionName[2],
+            if( COALESCE(matches_played, 0) = 0, '-', COALESCE(yellow_card, 0) ) AS yellow_card,
+            if( COALESCE(matches_played, 0) = 0, '-', COALESCE(red_card, 0) ) AS red_card, 
+            IFNULL(injury_img,'ok') AS health_status,
+            CASE WHEN injury_img IS NOT NULL 
+                THEN injury_description
+                ELSE null
+            END AS health_detail 
+
+            FROM $db.players players   
+            
+            LEFT OUTER JOIN $db.map_position_translate positions 
+            ON positions.code = players.map_position and positions.translate_code='$language_code'
+            
+            LEFT OUTER JOIN elites17_wizard.positions colorposition
+            ON colorposition.id = players.position_id
+
+            LEFT JOIN (
+                SELECT 
+                player_nacionality.player_id AS player_id, 
+                GROUP_CONCAT(countries.name) AS nacionalities_names,
+                GROUP_CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS nacionalities_flags
+                FROM $db.players_nacionalities player_nacionality
+                LEFT JOIN $db.country_codes countries
+                ON countries.country_code = player_nacionality.country_code
+                GROUP BY player_nacionality.player_id
+            ) nacionalities ON nacionalities.player_id = players.id
+
+            LEFT JOIN (
+                SELECT 
+                players_injuries.player_id AS player_id, 
+                IFNULL(injuries.name,'N/D') AS injury_description,
+                players_injuries.begin AS injury_begin,
+                players_injuries.posible_end AS injury_posible_end,
+                CONCAT('$imgFolderFlags','redcross.png') AS injury_img
+                FROM $db.players_injuries players_injuries 
+                LEFT JOIN $db.injuries_translate injuries 
+                ON injuries.injury_id = players_injuries.injury_id and injuries.translate_code='$language_code'
+                WHERE players_injuries.season_id=$season_id and isnull(players_injuries.end)
+            ) injuries ON injuries.player_id = players.id
+            
+            LEFT JOIN (
+                SELECT match_actions.player_id, 
+                COUNT(DISTINCT match_actions.match_id) AS matches_played
+                FROM $db.match_Actions match_actions 
+                LEFT JOIN  $db.matches matches ON matches.id = match_actions.match_id    
+                WHERE matches.season_id=$season_id            
+                GROUP BY match_actions.player_id
+            ) matches_played_counts ON matches_played_counts.player_id = players.id
+
+            LEFT JOIN (
+                SELECT 
+                match_actions.player_id as player_id, 
+                COUNT(*) AS action1
+                FROM $db.match_Actions match_actions
+                LEFT JOIN  $db.matches matches ON matches.id = match_actions.match_id
+                WHERE match_actions.action_id=$actionList[0] and matches.season_id=$season_id
+                GROUP BY match_actions.player_id
+            ) action1_counts ON action1_counts.player_id = players.id
+
+            LEFT JOIN (
+                SELECT 
+                match_actions.player_id as player_id, 
+                COUNT(*) AS action2
+                FROM $db.match_Actions match_actions
+                LEFT JOIN  $db.matches matches ON matches.id = match_actions.match_id
+                WHERE match_actions.action_id=$actionList[1] and matches.season_id=$season_id
+                GROUP BY match_actions.player_id
+            ) action2_counts ON action2_counts.player_id = players.id
+
+            LEFT JOIN (
+                SELECT 
+                match_actions.player_id as player_id, 
+                COUNT(*) AS action3
+                FROM $db.match_Actions match_actions
+                LEFT JOIN  $db.matches matches ON matches.id = match_actions.match_id
+                WHERE match_actions.action_id=$actionList[2] and matches.season_id=$season_id
+                GROUP BY match_actions.player_id
+            ) action3_counts ON action3_counts.player_id = players.id
+
+            LEFT JOIN (
+                SELECT 
+                match_actions.player_id, 
+                COUNT(*) AS yellow_card
+                FROM $db.match_Actions match_actions
+                LEFT JOIN  $db.matches matches ON matches.id = match_actions.match_id
+                WHERE match_actions.action_id=$actionList[3] and matches.season_id=$season_id
+                GROUP BY match_actions.player_id 
+            ) yellow_card_counts ON yellow_card_counts.player_id = players.id
+
+            LEFT JOIN (
+                SELECT 
+                match_actions.player_id, 
+                COUNT(*) AS red_card
+                FROM $db.match_Actions match_actions
+                LEFT JOIN  $db.matches matches ON matches.id = match_actions.match_id
+                WHERE match_actions.action_id=$actionList[4] and matches.season_id=$season_id
+                GROUP BY match_actions.player_id                
+            ) red_card_counts ON red_card_counts.player_id = players.id
+
+            WHERE players.club_id=$club_id 
+            and players.team_id=$team_id
+            and players.position_id=$position_id
+            $findOut
+            ORDER BY $orderfields $sense" ;        
+
+            $datos = parent::obtenerDatos($query);           
+
+            return $datos;
+
+        }
 
 
         public function getTeamPlayersInfoAndStaticsByPosition(

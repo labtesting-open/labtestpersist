@@ -192,4 +192,34 @@ class PlayerTest extends TestCase{
       
     }
 
+
+    public function testGetTeamPlayersInfoAndStaticsByPositionV2()
+    {
+        $club_id = 1; 
+        $team_id = 1;
+        $season_id = 2;          
+        $position_id = 4;
+        $language_code = null;
+        $order = null;
+        $order_sense = null;
+        $find = null;  
+
+        $players = $this->player->getTeamPlayersInfoAndStaticsByPositionV2(
+            $club_id,
+            $team_id,
+            $season_id,          
+            $position_id,
+            $language_code,
+            $order,
+            $order_sense,
+            $find 
+        );
+
+        //var_dump($players);
+
+        $this->assertFalse(empty($players));
+
+    }
+    
+
 }
