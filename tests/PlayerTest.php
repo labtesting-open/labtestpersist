@@ -6,6 +6,7 @@ use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
 
 
+
 class PlayerTest extends TestCase{
 
     private $player;
@@ -195,14 +196,15 @@ class PlayerTest extends TestCase{
 
     public function testGetTeamPlayersInfoAndStaticsByPositionV2()
     {
+
         $club_id = 1; 
         $team_id = 1;
         $season_id = 2;          
         $position_id = 4;
         $language_code = null;
-        $order = null;
+        $order = 'player_name';
         $order_sense = null;
-        $find = null;  
+        $find = 'carlos';  
 
         $players = $this->player->getTeamPlayersInfoAndStaticsByPositionV2(
             $club_id,

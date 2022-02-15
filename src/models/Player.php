@@ -61,11 +61,11 @@
 
             switch ($order) {
                 
-                case 'player.name':
+                case 'player_name':
                     $orderfields ="fullname";
                     break;
                 case 'player_age':
-                    $orderfields ="players.age";
+                    $orderfields ="player_age";
                     break;
                 case 'matches_played':
                         $orderfields ="matches_played";
