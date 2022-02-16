@@ -11,7 +11,8 @@
             $db = parent::getDataBase();            
 
             $query = "
-            SELECT            
+            SELECT
+            match_actions.id AS match_action_id,            
             match_actions.match_date,            
             clubsHome.name AS club_home_name,
             clubsVisitor.name AS club_visitor_name,          
