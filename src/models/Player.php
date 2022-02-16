@@ -571,16 +571,16 @@
             pl.height,
             pl.weight,            
             TIMESTAMPDIFF(YEAR,pl.birthdate,CURDATE()) AS player_age,            
-            IF( ISNULL(pl.img_profile), null,CONCAT('$imgFolderPlayersProfile', pl.img_profile)) AS img_profile_url,
-            IF( ISNULL(pl.img_header), null,CONCAT('$imgFolderPlayersHeader', pl.img_header)) AS img_header_url,             
+            IF( ISNULL(pl.img_profile), null,CONCAT('$imgFolderPlayersProfile', pl.img_profile)) AS img_profile_url,                         
             pl.jersey_nro,
             clubs.name AS 'club_name',            
-            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS club_logo,
             GROUP_CONCAT(cc.name) AS 'nationality_name',
             GROUP_CONCAT('$imgFolderFlags',pn.country_code,'.svg') AS 'nationality_flag',
             ofi.name AS 'outfitter_name',
             ft.name AS 'main_foot',      
             pt.name AS 'name_main_position',
+            colorposition.color_hexa,
             pl.map_position AS map_main_position
             FROM $db.players pl
             LEFT JOIN $db.clubs clubs ON
@@ -597,6 +597,8 @@
                 pl.position_id=p.id
             INNER JOIN $db.position_translate pt ON
                 p.id = pt.ID
+            LEFT OUTER JOIN $db.positions colorposition
+                ON colorposition.id = pl.position_id
             WHERE
                 pl.id =$player_id AND ft.country_code = '$language_code' 
                 AND pt.country_code='$language_code'" ;        
