@@ -98,6 +98,8 @@
             nacionalities.nacionalities_names,
             nacionalities.nacionalities_flags,
             COALESCE(matches_played, 0) AS matches_played,
+            if( COALESCE(matches_played, 0) = 0, '-', COALESCE(avg_minutes, 0) ) AS avg_minutes, 
+            if( COALESCE(matches_played, 0) = 0, '-', COALESCE(to_start, 0) ) AS to_start,
             if( COALESCE(matches_played, 0) = 0, '-', COALESCE(action1, 0) ) AS $actionName[0],
             if( COALESCE(matches_played, 0) = 0, '-', COALESCE(action2, 0) ) AS $actionName[1], 
             if( COALESCE(matches_played, 0) = 0, '-', COALESCE(action3, 0) ) AS $actionName[2],
@@ -199,6 +201,18 @@
                 WHERE match_actions.action_id=$actionList[4] and matches.season_id=$season_id
                 GROUP BY match_actions.player_id                
             ) red_card_counts ON red_card_counts.player_id = players.id
+
+            LEFT JOIN (            
+				SELECT
+				minutes.player_id AS player_id,
+				SUM(minutes.to_start) AS to_start,
+				ROUND(AVG(minutes.minutes)) AS avg_minutes
+				FROM $db.match_player_minutes minutes
+				INNER JOIN $db.matches matches
+				ON matches.id =  minutes.match_id
+				where matches.season_id = $season_id
+				GROUP BY minutes.player_id
+            ) match_time ON match_time.player_id = players.id
 
             WHERE players.club_id=$club_id 
             and players.team_id=$team_id
