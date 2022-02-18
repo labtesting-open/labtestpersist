@@ -8,14 +8,18 @@
 
         public function getPlayerActionsByAction_id($player_id, $action_id){
 
-            $db = parent::getDataBase();            
+            $db = parent::getDataBase();
+            
+            $imgFolderClub = $this->getImgFolderClubs();
 
             $query = "
             SELECT
             match_actions.id AS match_action_id,            
             match_actions.match_date,            
             clubsHome.name AS club_home_name,
-            clubsVisitor.name AS club_visitor_name,          
+            IF( ISNULL(clubsHome.logo), null,CONCAT('$imgFolderClub', clubsHome.logo)) AS club_home_logo,
+            clubsVisitor.name AS club_visitor_name,
+            IF( ISNULL(clubsVisitor.logo), null,CONCAT('$imgFolderClub', clubsVisitor.logo)) AS club_visitor_logo,          
             match_actions.minute,
             match_actions.url_video
             FROM $db.match_actions
