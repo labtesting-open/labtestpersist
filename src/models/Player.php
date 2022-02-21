@@ -596,7 +596,7 @@
             GROUP_CONCAT('$imgFolderFlags',pn.country_code,'.svg') AS 'nationality_flag',
             ofi.name AS 'outfitter_name',
             ft.name AS 'main_foot',
-            pl.map_position AS map_main_position     
+            pl.map_position AS map_main_position,     
             map_position_translate.name AS map_main_position_name,
             colorposition.color_hexa
             
@@ -618,8 +618,7 @@
             LEFT OUTER JOIN $db.positions colorposition
                 ON colorposition.id = pl.position_id
             WHERE
-                pl.id =$player_id AND ft.country_code = '$language_code' 
-                AND pt.country_code='$language_code'" ;        
+                pl.id =$player_id AND ft.country_code = '$language_code'" ;        
 
             $datos = parent::obtenerDatos($query);    
 

@@ -222,6 +222,18 @@ class PlayerTest extends TestCase{
         $this->assertFalse(empty($players));
 
     }
+
+    public function testGetPlayerPerfil()
+    {
+        $player_id = 1;
+        $language_code = null;
+
+        $player = $this->player->getPlayerPerfil($player_id, $language_code );
+
+        var_dump($player);
+
+        $this->assertFalse(empty($player));
+    }
     
 
 }
