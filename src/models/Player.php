@@ -574,8 +574,7 @@
 
             $db = parent::getDataBase(); 
 
-            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
-            $imgFolderPlayersHeader = $this->getImgFolderPlayerHeaders();
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();           
             $imgFolderFlags = $this->getImgFolderFlags();
             $imgFolderClub = $this->getImgFolderClubs();
 
@@ -596,10 +595,11 @@
             GROUP_CONCAT(cc.name) AS 'nationality_name',
             GROUP_CONCAT('$imgFolderFlags',pn.country_code,'.svg') AS 'nationality_flag',
             ofi.name AS 'outfitter_name',
-            ft.name AS 'main_foot',      
-            pt.name AS 'name_main_position',
-            colorposition.color_hexa,
-            pl.map_position AS map_main_position
+            ft.name AS 'main_foot',
+            pl.map_position AS map_main_position     
+            map_position_translate.name AS map_main_position_name,
+            colorposition.color_hexa
+            
             FROM $db.players pl
             LEFT JOIN $db.clubs clubs ON
                 pl.club_id = clubs.id
@@ -613,8 +613,8 @@
                 pl.foot_code = ft.foot_code
             LEFT JOIN $db.positions p ON
                 pl.position_id=p.id
-            INNER JOIN $db.position_translate pt ON
-                p.id = pt.ID
+            LEFT JOIN $db.map_position_translate map_position_translate ON
+                map_position_translate.code = pl.map_position and map_position_translate.translate_code='$language_code'
             LEFT OUTER JOIN $db.positions colorposition
                 ON colorposition.id = pl.position_id
             WHERE
