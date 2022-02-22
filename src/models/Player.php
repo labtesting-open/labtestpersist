@@ -576,8 +576,10 @@
             $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
 
             $query = "
-            SELECT             
-            CONCAT(players.name, ' ', players.surname) AS player_fullname, 
+            SELECT
+            players.id AS player_id,             
+            CONCAT(players.name, ' ', players.surname) AS player_fullname,
+            players.name AS player_name, 
             players.surname AS player_surname,            
             IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url,
             clubs.name AS club_name,
