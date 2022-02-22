@@ -536,7 +536,84 @@
 
             return $datos;
 
-        }  
+        }
+
+
+        public function searchQuick(
+            $find = null, 
+            $limit, 
+            $language_code, 
+            $order, 
+            $order_sense
+            ){  
+
+            if(is_null($find)) return array();
+
+            $db = parent::getDataBase();
+
+            $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
+            $imgFolderFlags = $this->getImgFolderFlags();
+            $imgFolderClub = $this->getImgFolderClubs();
+
+            $findScape = parent::scapeParameter($find);
+
+            $language_code = (isset($language_code) && $language_code != null)? $language_code: 'GB';
+            
+            $limitReg = (isset($limit))? $limit : 10;
+
+            switch ($order) {
+                
+                case 'name':
+                    $orderfields ="player_fullname";
+                    break;
+                case 'player_name':
+                        $orderfields ="player_fullname";
+                        break;                
+                default:
+                    $orderfields ="player_fullname";
+            }            
+
+            $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
+
+            $query = "
+            SELECT             
+            CONCAT(players.name, ' ', players.surname) AS player_fullname, 
+            players.surname AS player_surname,            
+            IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url,
+            clubs.name AS club_name,
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS club_logo,
+            positions.name as map_position_name,
+            nacionalities.nacionalities_names,
+            nacionalities.nacionalities_flags
+
+            FROM $db.players players
+
+            LEFT OUTER JOIN $db.map_position_translate positions 
+            ON positions.code = players.map_position and positions.translate_code='$language_code'
+
+            LEFT JOIN $db.clubs clubs ON clubs.id = players.club_id         
+
+            LEFT JOIN (
+                SELECT 
+                player_nacionality.player_id AS player_id, 
+                GROUP_CONCAT(countries.name) AS nacionalities_names,
+                GROUP_CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS nacionalities_flags
+                FROM $db.players_nacionalities player_nacionality
+                LEFT JOIN $db.country_codes countries
+                ON countries.country_code = player_nacionality.country_code
+                GROUP BY player_nacionality.player_id
+            ) nacionalities ON nacionalities.player_id = players.id
+
+            WHERE 
+            LOWER( CONCAT(players.name, ' ', players.surname)) like LOWER('%$findScape%')  
+            ORDER BY $orderfields $sense    
+            limit $limitReg" ;        
+
+            $datos = parent::obtenerDatos($query);           
+
+            return $datos;
+
+        }
 
         
 

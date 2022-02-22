@@ -230,9 +230,31 @@ class PlayerTest extends TestCase{
 
         $player = $this->player->getPlayerPerfil($player_id, $language_code );
 
-        var_dump($player);
+        //var_dump($player);
 
         $this->assertFalse(empty($player));
+    }
+
+    public function testSearchQuick()
+    { 
+        $find = null;
+        $limit = null;
+        $language_code = null;
+        $order = null;
+        $order_sense = null;
+
+        $searchResult = $this->player->searchQuick(
+            $find, 
+            $limit, 
+            $language_code, 
+            $order, 
+            $order_sense
+        );
+
+        //var_dump($searchResult);
+
+        $this->assertFalse(empty($searchResult));
+
     }
     
 
