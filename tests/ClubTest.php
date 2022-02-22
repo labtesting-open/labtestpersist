@@ -113,6 +113,28 @@ class ClubTest extends TestCase{
       
     }
 
+    public function testSearchQuick()
+    { 
+        $find = 'riv';
+        $limit = null;
+        $language_code = null;
+        $order = null;
+        $order_sense = null;
+
+        $searchResult = $this->club->searchQuick(
+            $find, 
+            $limit, 
+            $language_code, 
+            $order, 
+            $order_sense
+        );
+
+        //var_dump($searchResult);
+
+        $this->assertFalse(empty($searchResult));
+
+    }
+
 
 
 

@@ -237,7 +237,7 @@ class PlayerTest extends TestCase{
 
     public function testSearchQuick()
     { 
-        $find = null;
+        $find = 'carlos';
         $limit = null;
         $language_code = null;
         $order = null;

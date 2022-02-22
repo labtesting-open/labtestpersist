@@ -141,7 +141,74 @@
 
             return $datos;
 
-        }      
+        }
+        
+        
+        public function searchQuick( 
+        $find = null, 
+        $limit, 
+        $language_code, 
+        $order, 
+        $order_sense
+        ){  
+
+            if(is_null($find)) return array();
+
+            $db = parent::getDataBase();
+            $imgFolderClub = $this->getImgFolderClubs();
+            $imgFolderFlag = $this->getImgFolderFlags();
+            
+
+            $findScape = parent::scapeParameter($find);
+
+            $language_code = (isset($language_code) && $language_code != null)? $language_code: 'GB';
+            
+            $limitReg = (isset($limit))? $limit : 10;
+
+            switch ($order) {
+                
+                case 'name':
+                    $orderfields ="club_name";
+                    break;
+                case 'club_name':
+                    $orderfields ="club_name";
+                    break;
+                case 'squad':
+                    $orderfields ="squad";
+                    break;            
+                default:
+                    $orderfields ="club_name";
+            }            
+
+            $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
+
+            $query = "
+            SELECT
+            clubs.id AS club_id,
+            clubs.name AS club_name,
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS club_logo,
+            CONCAT(countries.name) AS nacionalities_names,
+            CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS nacionalities_flags,
+            COALESCE(players_count, 0) AS squad
+            FROM $db.clubs clubs
+            LEFT JOIN $db.country_codes countries
+            ON countries.country_code = clubs.country_code
+            LEFT JOIN (
+                SELECT   
+                players.club_id AS club_id
+                ,COUNT(players.id) AS players_count		
+                FROM  $db.players players   
+                GROUP by players.club_id
+            ) AS plantilla ON plantilla.club_id = clubs.id
+            WHERE LOWER(clubs.name) like LOWER('%$findScape%')
+            ORDER BY $orderfields $sense            
+            limit $limitReg" ;        
+
+            $datos = parent::obtenerDatos($query);           
+
+            return $datos;
+
+        }
 
 
         public function findClubsFast($find, $language_code, $limit = 10){  
