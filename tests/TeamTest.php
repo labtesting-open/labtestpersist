@@ -138,6 +138,19 @@ class TeamTest extends TestCase{
     }
 
 
+    public function testGetTeams()
+    {
+        $club_id=1;
+        
+        $clubsTeam = $this->team->getTeam($club_id);
+
+        //var_dump($clubsTeam);
+
+        $this->assertFalse(empty($clubsTeam));
+
+    }
+
+
     public function testDeleteTeam(){
         
         $team_id=38;

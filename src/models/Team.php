@@ -43,7 +43,8 @@
             $db = parent::getDataBase();
            
             $imgFolderFlags = $this->getImgFolderFlags();
-            $imgFolderClubs = parent::getImgFolderClubs();   
+            $imgFolderClubs = parent::getImgFolderClubs();
+            $imgFolderDivision = $this->getImgFolderDivision();   
 
             $country = ($country_code == null)? 'GB': $country_code;
 
@@ -53,6 +54,7 @@
             IF( ISNULL(teams.team_name), clases.name ,teams.team_name) AS team_name, 
             ct.name as category_name,
             d.name as division_name,
+            IF( ISNULL(d.logo), null,CONCAT('$imgFolderDivision', d.logo)) AS division_logo,
             COALESCE(players_count, 0) AS squad,
             COALESCE(age_average, 0) AS age_average,
             CONCAT(countries.name) AS country_name,
