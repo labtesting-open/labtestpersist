@@ -152,7 +152,7 @@
         $order_sense
         ){  
 
-            if(is_null($find)) return array();
+            if(is_null($find) || empty($find)) return array();
 
             $db = parent::getDataBase();
             $imgFolderClub = $this->getImgFolderClubs();
