@@ -585,6 +585,7 @@
             clubs.name AS club_name,
             IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS club_logo,
             positions.name as map_position_name,
+            colorposition.color_hexa,
             nacionalities.nacionalities_names,
             nacionalities.nacionalities_flags
 
@@ -593,7 +594,10 @@
             LEFT OUTER JOIN $db.map_position_translate positions 
             ON positions.code = players.map_position and positions.translate_code='$language_code'
 
-            LEFT JOIN $db.clubs clubs ON clubs.id = players.club_id         
+            LEFT JOIN $db.clubs clubs ON clubs.id = players.club_id
+            
+            LEFT OUTER JOIN $db.positions colorposition
+            ON colorposition.id = players.position_id
 
             LEFT JOIN (
                 SELECT 
