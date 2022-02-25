@@ -206,6 +206,10 @@
 
         }
        
+        public function getFunctionExample()
+        {
+            return null;
+        }
 
 
         
