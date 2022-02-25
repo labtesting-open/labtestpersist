@@ -22,7 +22,7 @@ class MatchActionsTest extends TestCase{
 
         $player_id = 1;
         $season_id = null;
-        $match_id = 1;
+        $match_id = null;
         $order = null;
         $order_sense = null;
         $season_id_select = null;
@@ -36,7 +36,7 @@ class MatchActionsTest extends TestCase{
             $order_sense
         );
         
-        //var_dump($seasons);
+        var_dump($seasons);
 
         $this->assertFalse(empty($seasons)); 
       
@@ -77,6 +77,31 @@ class MatchActionsTest extends TestCase{
         
 
         $seasons = $this->matchActions->getActions(
+            $player_id,
+            $season_id,
+            $match_id_list,
+            $action_id_select_list,
+            $order,
+            $order_sense
+        );
+        
+        //var_dump($seasons);
+
+        $this->assertFalse(empty($seasons)); 
+      
+    }
+
+    public function testGetPlayerActions(){
+
+        $player_id = 1;
+        $season_id = null;
+        $match_id_list = null;
+        $action_id_select_list = null;
+        $order = null;
+        $order_sense = null;
+        
+
+        $seasons = $this->matchActions->getPlayerActions(
             $player_id,
             $season_id,
             $match_id_list,

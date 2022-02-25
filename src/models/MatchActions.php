@@ -228,7 +228,90 @@
             
             return $rows;
 
-        }       
+        }
+        
+        
+        public function getPlayerActions(
+            $player_id,
+            $season_id = null,
+            $match_id_list = null, 
+            $action_id_list = null,
+            $order = null, 
+            $order_sense = null
+        ){
+
+            $db = parent::getDataBase();
+            
+            switch ($order) {
+                
+                case 'match_date':
+                    $orderfields ="match_actions.match_date";
+                    break;
+                case 'action_name':
+                    $orderfields ="action_name";
+                    break;              
+                default:
+                    $orderfields ="match_actions.match_date";
+            }            
+
+            $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";           
+
+            $where='';
+
+            if($player_id != null){
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "match_actions.player_id = $player_id ";                    
+            }
+            
+            if($season_id != null){
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "matches.season_id = $season_id ";                    
+            }
+
+            if($match_id_list != null){
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "matches.id in ($match_id_list) ";                    
+            }
+            
+            if($action_id_list != null){
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= "match_actions.action_id in ($action_id_list) ";                    
+            }   
+           
+
+            $query = "
+            SELECT 
+            match_actions.match_id
+            ,match_actions.match_date
+            ,actions.name AS action_name            
+            ,clubsHome.name AS club_home_name
+            ,clubsVisitor.name AS club_visitor_name
+            ,matches.goals_home_team
+            ,matches.goals_visitor_team
+            ,match_actions.minute
+            ,match_actions.url_video
+                        
+            FROM $db.match_actions match_actions
+
+            INNER JOIN $db.matches matches
+                ON matches.id = match_actions.match_id
+                
+            LEFT JOIN $db.actions actions
+                ON actions.id = match_actions.action_id
+
+            LEFT JOIN $db.clubs clubsHome
+            ON clubsHome.id = matches.club_id_home 
+
+            LEFT JOIN $db.clubs clubsVisitor 
+            ON clubsVisitor.id = matches.club_id_visitor
+            $where
+            ORDER BY $orderfields $sense";        
+
+            $datos = parent::obtenerDatos($query);           
+
+            return $datos;
+
+        }
 
 
 
