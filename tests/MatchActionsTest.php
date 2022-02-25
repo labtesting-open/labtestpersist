@@ -25,10 +25,12 @@ class MatchActionsTest extends TestCase{
         $match_id = 1;
         $order = null;
         $order_sense = null;
+        $season_id_select = null;
 
         $seasons = $this->matchActions->getSeasons(
             $player_id,
             $season_id,
+            $season_id_select,
             $match_id,
             $order,
             $order_sense
@@ -47,11 +49,13 @@ class MatchActionsTest extends TestCase{
         $match_id = null;
         $order = null;
         $order_sense = null;
+        $match_id_select_list = null;
 
         $seasons = $this->matchActions->getMatches(
             $player_id,
             $season_id,
             $match_id,
+            $match_id_select_list,
             $order,
             $order_sense
         );
@@ -66,14 +70,17 @@ class MatchActionsTest extends TestCase{
 
         $player_id = 1;
         $season_id = null;
-        $match_id = null;
+        $match_id_list = null;
+        $action_id_select_list = null;
         $order = null;
         $order_sense = null;
+        
 
         $seasons = $this->matchActions->getActions(
             $player_id,
             $season_id,
-            $match_id,
+            $match_id_list,
+            $action_id_select_list,
             $order,
             $order_sense
         );

@@ -9,6 +9,7 @@
         public function getSeasons(
             $player_id,
             $season_id = null,
+            $season_id_selected = null,
             $match_id = null,
             $order = null, 
             $order_sense = null
@@ -26,7 +27,13 @@
                     $orderfields ="matches.season_id";
             }            
 
-            $sense = ( $order_sense != null && $order_sense =='DESC')?" DESC ":" ASC ";
+            $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
+
+            $selected = '';
+
+            if ($season_id_selected != null) {
+                $selected =",IF(matches.season_id=$season_id_selected, 'true','false') AS selected ";
+            }
 
             $where='';
 
@@ -48,10 +55,11 @@
 
             $query = "
             SELECT 
-            matches.season_id, 
-            seasons.begin, 
-            seasons.end, 
-            COALESCE(matchesSeasons.matches_count, 0) AS matches
+            matches.season_id 
+            ,seasons.begin 
+            ,seasons.end 
+            ,COALESCE(matchesSeasons.matches_count, 0) AS matches
+            $selected
             FROM $db.match_actions match_actions
             INNER JOIN $db.matches matches
                 ON matches.id = match_actions.match_id	
@@ -79,6 +87,7 @@
             $player_id,
             $season_id = null,
             $match_id = null,
+            $match_id_selected_list = null,
             $order = null, 
             $order_sense = null
         )
@@ -95,7 +104,13 @@
                     $orderfields ="matches.match_date";
             }            
 
-            $sense = ( $order_sense != null && $order_sense =='DESC')?" DESC ":" ASC ";
+            $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
+
+            $selected = '';
+
+            if ($match_id_selected_list != null) {
+                $selected =",IF(matches.id IN ($match_id_selected_list), 'true','false') AS selected ";
+            }
 
             $where='';
 
@@ -116,14 +131,15 @@
 
             $query = "
             SELECT
-            matches.season_id,
-            matches.id AS match_id,
-            matches.match_date,
-            clubsHome.name AS club_home_name,            
-            clubsVisitor.name AS club_visitor_name,
-            matches.goals_home_team,
-            matches.goals_visitor_team,
-            COUNT(match_actions.action_id) AS actions_in_match
+            matches.season_id
+            ,matches.id AS match_id
+            ,matches.match_date
+            ,clubsHome.name AS club_home_name
+            ,clubsVisitor.name AS club_visitor_name
+            ,matches.goals_home_team
+            ,matches.goals_visitor_team
+            ,COUNT(match_actions.action_id) AS actions_in_match
+            $selected
             FROM $db.match_actions match_actions
             INNER JOIN $db.matches matches
                 ON matches.id = match_actions.match_id
@@ -146,7 +162,8 @@
         public function getActions(
             $player_id,
             $season_id = null,
-            $match_id = null, 
+            $match_id_list = null, 
+            $action_id_select_list = null,
             $order = null, 
             $order_sense = null           
         )
@@ -166,7 +183,13 @@
                     $orderfields ="action_count";
             }            
 
-            $sense = ( $order_sense != null && $order_sense =='DESC')?" DESC ":" ASC ";
+            $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
+
+            $selected = '';
+
+            if ($action_id_select_list != null) {
+                $selected =",IF(match_actions.action_id IN ($action_id_select_list), 'true','false') AS selected ";
+            }
 
             $where='';
 
@@ -180,16 +203,17 @@
                 $where.= "matches.season_id = $season_id ";                    
             }
 
-            if($match_id != null){
+            if($match_id_list != null){
                 $where.=(empty($where))?' WHERE ':' and ';
-                $where.= "matches.id = $match_id ";                    
+                $where.= "matches.id in ($match_id_list) ";                    
             }
 
             $query = "
             SELECT 
-            match_actions.action_id,
-            actions.name AS action_name,
-            COUNT(match_actions.action_id) AS action_count
+            match_actions.action_id
+            ,actions.name AS action_name
+            ,COUNT(match_actions.action_id) AS action_count
+            $selected
             FROM 
             $db.match_actions match_actions
             INNER JOIN $db.matches matches
@@ -204,15 +228,7 @@
             
             return $rows;
 
-        }
-       
-        public function getFunctionExample()
-        {
-            return null;
-        }
-
-
-        
+        }       
 
 
 
