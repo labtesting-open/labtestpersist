@@ -139,6 +139,8 @@
             ,matches.goals_home_team
             ,matches.goals_visitor_team
             ,COUNT(match_actions.action_id) AS actions_in_match
+            ,countries.name AS country_name
+            ,division.name AS division_name
             $selected
             FROM $db.match_actions match_actions
             INNER JOIN $db.matches matches
@@ -146,7 +148,11 @@
             LEFT JOIN $db.clubs clubsHome
                 ON clubsHome.id = matches.club_id_home
             LEFT JOIN $db.clubs clubsVisitor 
-                ON clubsVisitor.id = matches.club_id_visitor 
+                ON clubsVisitor.id = matches.club_id_visitor
+            LEFT JOIN $db.country_codes countries
+				ON countries.country_code = matches.country_code
+			LEFT JOIN $db.division division
+				ON division.id = matches.division_id
             $where
             GROUP BY matches.id
             ORDER BY $orderfields $sense";
