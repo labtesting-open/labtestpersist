@@ -296,7 +296,8 @@
             ,matches.goals_visitor_team
             ,match_actions.minute
             ,match_actions.url_video
-                        
+            ,countries.name AS country_name
+            ,division.name AS division_name            
             FROM $db.match_actions match_actions
 
             INNER JOIN $db.matches matches
@@ -310,6 +311,12 @@
 
             LEFT JOIN $db.clubs clubsVisitor 
             ON clubsVisitor.id = matches.club_id_visitor
+            
+            LEFT JOIN $db.country_codes countries
+				ON countries.country_code = matches.country_code
+
+            LEFT JOIN $db.division division
+				ON division.id = matches.division_id
             $where
             ORDER BY $orderfields $sense";        
 
