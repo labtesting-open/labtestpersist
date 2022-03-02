@@ -99,7 +99,8 @@ class MatchActionsTest extends TestCase{
         $action_id_select_list = null;
         $order = null;
         $order_sense = null;
-        
+        $user_id = 1;
+        $totalAccounts = 6;
 
         $seasons = $this->matchActions->getPlayerActions(
             $player_id,
@@ -107,7 +108,9 @@ class MatchActionsTest extends TestCase{
             $match_id_list,
             $action_id_select_list,
             $order,
-            $order_sense
+            $order_sense,
+            $user_id,
+            $totalAccounts
         );
         
         //var_dump($seasons);

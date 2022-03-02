@@ -678,6 +678,7 @@
             GROUP_CONCAT(cc.name) AS 'nationality_name',
             GROUP_CONCAT('$imgFolderFlags',pn.country_code,'.svg') AS 'nationality_flag',
             ofi.name AS 'outfitter_name',
+            IF(pl.foot_code=1,'R','L') AS foot,
             ft.name AS 'main_foot',
             pl.map_position AS map_main_position,     
             map_position_translate.name AS map_main_position_name,

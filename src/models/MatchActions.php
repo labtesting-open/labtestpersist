@@ -243,7 +243,9 @@
             $match_id_list = null, 
             $action_id_list = null,
             $order = null, 
-            $order_sense = null
+            $order_sense = null,
+            $user_id = null,
+            $totalAccounts = null
         ){
 
             $db = parent::getDataBase();
@@ -282,7 +284,50 @@
             if($action_id_list != null){
                 $where.=(empty($where))?' WHERE ':' and ';
                 $where.= "match_actions.action_id in ($action_id_list) ";                    
-            }   
+            }
+
+            $own_favourite_field ='';
+            $own_favourite_join ='';
+
+            if($user_id != null && is_numeric($user_id)){
+
+                $own_favourite_field = ",IF( ISNULL(user_id_mark), 'fasle', 'true') AS own_favourite ";
+                $own_favourite_join = "
+                LEFT JOIN (
+                    SELECT
+                    match_action_id 
+                    ,user_id AS user_id_mark 
+                    FROM $db.users_favorites_actions
+                    where user_id = $user_id
+                ) AS favorites ON favorites.match_action_id = match_actions.id";
+
+            }
+
+            $selectedAsFavouriteField = '';
+            $firesTrendingField = '';
+            $selectedAsFavouriteJoin = '';
+
+            if($totalAccounts != null && is_numeric($totalAccounts) && $totalAccounts > 0)
+            {
+                $selectedAsFavouriteField = ",COALESCE(total_selected, 0) AS selected_as_favourite ";
+                
+                $firesTrendingField =",CASE
+				    WHEN total_selected * 100/$totalAccounts BETWEEN 1 and 34 THEN 1
+                    WHEN total_selected * 100/$totalAccounts BETWEEN 35 and 67 THEN 2
+                    WHEN total_selected * 100/$totalAccounts > 68 THEN 3				
+				    ELSE 0
+			    END AS fires_trending ";
+
+                $selectedAsFavouriteJoin = "
+                LEFT JOIN (              
+                    SELECT
+                    match_action_id
+                    ,count(user_id) AS total_selected
+                    FROM elites17_wizard.users_favorites_actions
+                    GROUP BY match_action_id
+                ) AS trending ON trending.match_action_id = match_actions.id ";
+            }
+
            
 
             $query = "
@@ -297,7 +342,11 @@
             ,match_actions.minute
             ,match_actions.url_video
             ,countries.name AS country_name
-            ,division.name AS division_name            
+            ,division.name AS division_name
+            $own_favourite_field
+            $selectedAsFavouriteField
+            $firesTrendingField
+
             FROM $db.match_actions match_actions
 
             INNER JOIN $db.matches matches
@@ -317,6 +366,10 @@
 
             LEFT JOIN $db.division division
 				ON division.id = matches.division_id
+            
+            $own_favourite_join    
+            $selectedAsFavouriteJoin
+
             $where
             ORDER BY $orderfields $sense";        
 

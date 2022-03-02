@@ -67,10 +67,7 @@
 
             return $datos;
 
-        }
-
-
-       
+        }       
 
 
         public function getPlanServices($plan_id){
@@ -91,6 +88,21 @@
 
             return $datos;
 
+        }
+
+        public function getTotalActiveAccounts()
+        {
+            $db = parent::getDataBase(); 
+
+            $query = "            
+            SELECT 
+            COUNT(*) total_users             
+            FROM $db.users
+            WHERE ACTIVE = 1";
+
+            $datos = parent::obtenerDatos($query);           
+
+            return $datos;
         }
 
 
