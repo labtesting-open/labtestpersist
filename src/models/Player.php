@@ -677,8 +677,13 @@
             IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS club_logo,
             GROUP_CONCAT(cc.name) AS 'nationality_name',
             GROUP_CONCAT('$imgFolderFlags',pn.country_code,'.svg') AS 'nationality_flag',
-            ofi.name AS 'outfitter_name',
-            IF(pl.foot_code=1,'R','L') AS foot,
+            ofi.name AS 'outfitter_name',            
+            CASE
+                WHEN pl.foot_code = 0 THEN 'L'
+                WHEN pl.foot_code = 1 THEN 'R'
+                WHEN pl.foot_code = 2 THEN 'B'
+                ELSE 'R'
+            END AS foot,
             ft.name AS 'main_foot',
             pl.map_position AS map_main_position,     
             map_position_translate.name AS map_main_position_name,

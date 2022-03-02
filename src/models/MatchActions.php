@@ -291,7 +291,7 @@
 
             if($user_id != null && is_numeric($user_id)){
 
-                $own_favourite_field = ",IF( ISNULL(user_id_mark), 'fasle', 'true') AS own_favourite ";
+                $own_favourite_field = ",IF( ISNULL(user_id_mark), 'false', 'true') AS own_favourite ";
                 $own_favourite_join = "
                 LEFT JOIN (
                     SELECT
