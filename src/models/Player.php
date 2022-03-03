@@ -1043,35 +1043,55 @@
 
             $query = "
             SELECT  
-            players.id AS player_id,
-            players.name AS player_name,
-            players.surname AS player_surname,
-            IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url,
-            TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age,
-            players.height AS player_height,
-            players.weight AS player_weight,
-            IF(players.foot_code=1,'R','L') AS foot,
-            nacionalities.nationalities_flags AS nationalities_flags,
-            nacionalities.nationalities_names AS nationalities_names,
-            positions.id AS position_id,
-            positions.name AS position_name,
-            second_position.second_positions_codes AS second_positions_codes,
-            second_position.second_positions_names AS second_positions_names, 
-			players.club_id,
-            clubs.name AS club_name,
-            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,            
-            players.team_id,  
-            teams.team_name AS team_name,
-            countries.name AS country_name,
-			teams.division_id,
-            divisions.name AS division_name,
-            divisions.division_class_id AS division_class_id,
-            teams.category_id AS category_id
+            players.id AS player_id
+            ,players.name AS player_name
+            ,players.surname AS player_surname
+            ,IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url
+            ,TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age
+            ,players.height AS player_height
+            ,players.weight AS player_weight            
+            ,CASE
+                WHEN players.foot_code = 0 THEN 'L'
+                WHEN players.foot_code = 1 THEN 'R'
+                WHEN players.foot_code = 2 THEN 'B'
+                ELSE 'R'
+            END AS foot
+            ,nacionalities.nationalities_flags AS nationalities_flags
+            ,nacionalities.nationalities_names AS nationalities_names
+            ,positions.id AS position_id
+            ,positions.name AS position_name
+            ,second_position.second_positions_codes AS second_positions_codes
+            ,second_position.second_positions_names AS second_positions_names 
+			,players.club_id
+            ,clubs.name AS club_name
+            ,IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo
+            ,players.team_id
+            ,teams.team_name AS team_name
+            ,countries.name AS country_name
+			,teams.division_id
+            ,divisions.name AS division_name
+            ,divisions.division_class_id AS division_class_id
+            ,teams.category_id AS category_id
+            ,IFNULL(injuries.injury_description,'ok') AS health_status
+
             FROM  $db.players players
             INNER JOIN $db.clubs clubs ON clubs.id = players.club_id
             LEFT JOIN $db.teams teams  ON teams.id = players.team_id
             INNER JOIN $db.country_codes countries ON countries.country_code = clubs.country_code
             LEFT JOIN $db.division divisions ON divisions.id = teams.division_id
+
+            LEFT JOIN(
+				SELECT
+				players_injuries.player_id AS player_id
+				,IFNULL(players_injuries.posible_end,'N/D') AS injury_posible_end
+				,IFNULL(injuries_translate.name,'N/D') AS injury_description
+				FROM $db.players_injuries players_injuries
+				LEFT JOIN $db.injuries_translate injuries_translate 
+					ON injuries_translate.injury_id = players_injuries.injury_id 
+					and injuries_translate.translate_code='$language_code'
+				WHERE ISNULL(players_injuries.end) 
+            ) injuries ON injuries.player_id = players.id
+
             INNER JOIN (
                 SELECT 
                 player_nacionality.player_id,
@@ -1173,7 +1193,19 @@
             }
 
             if($foot != null){
-                $footCode =($foot != 'R')?0:1;
+                switch ($foot) {
+                    case 'L':
+                        $footCode = 0; 
+                        break;
+                    case 'R':
+                        $footCode = 1;
+                        break;
+                    case 'B':
+                        $footCode = 2;
+                        break;
+                    default:
+                        $footCode = 1;
+                }                
                 $where.=(empty($where))?' WHERE ':' and ';                
                 $where.= " players.foot_code = $footCode ";
             }  

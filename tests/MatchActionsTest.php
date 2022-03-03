@@ -36,7 +36,7 @@ class MatchActionsTest extends TestCase{
             $order_sense
         );
         
-        var_dump($seasons);
+        //var_dump($seasons);
 
         $this->assertFalse(empty($seasons)); 
       
