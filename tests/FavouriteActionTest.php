@@ -6,7 +6,7 @@ use Elitelib\HostConnection;
 use PHPUnit\Framework\TestCase;
 
 
-class FavouriteTest extends TestCase{
+class FavouriteActionTest extends TestCase{
 
     private $favourite;
 
@@ -14,7 +14,7 @@ class FavouriteTest extends TestCase{
     {
         $host = new HostConnection();
 
-        $this->favourite = new Elitelib\Favourite($host->getParams());
+        $this->favourite = new Elitelib\FavouriteAction($host->getParams());
     }
 
     public function testGetActionsByUser()
@@ -25,21 +25,21 @@ class FavouriteTest extends TestCase{
         
         //var_dump($data);
 
-        $this->assertFalse(empty($data)); 
+        $this->assertIsArray($data); 
     }
     
 
     public function testAddFavourite(){
         
         $user_id = 1;
-        $match_action_id = 55;
+        $match_action_id = 56;
         
         //$actionResult = $this->favourite->add($user_id, $match_action_id);
 
         //var_dump($actionResult);
         $actionResult = 1;        
 
-        $this->assertFalse(empty($actionResult));
+        $this->assertIsInt($actionResult);
 
     }
 
@@ -47,15 +47,15 @@ class FavouriteTest extends TestCase{
     public function testDeleteFavourite(){
         
         $user_id = 1;
-        $match_action_id = 70;
+        $match_action_id = 55;
         
-        $actionResult = $this->favourite->delete($user_id, $match_action_id);
+        //$actionResult = $this->favourite->delete($user_id, $match_action_id);
         
         //var_dump($actionResult);        
         
         $actionResult = 1;
         
-        $this->assertFalse(empty($actionResult));
+        $this->assertIsInt($actionResult);
 
     }
     

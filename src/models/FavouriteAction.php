@@ -3,12 +3,24 @@
     namespace Elitelib;  
 
 
-    class Favourite extends Connect{        
+    class FavouriteAction extends Connect{        
 
 
-        public function getActionsByUser($user_id){
+        public function getActionsByUser($user_id, $match_action_id = null){
 
-            $db = parent::getDataBase();           
+            $db = parent::getDataBase();
+
+            $where = '';
+            
+            if($user_id != null){
+                $where.=' WHERE ';                
+                $where.= " user_id = '$user_id'";
+            }
+
+            if($match_action_id != null){
+                $where.=(empty($where))?' WHERE ':' and ';                
+                $where.= " match_action_id = '$match_action_id'";
+            }
             
             $query = "
             SELECT
@@ -16,7 +28,7 @@
             ,user_id
             ,date_added 
             FROM $db.users_favorites_actions
-            where user_id = $user_id
+            $where
             ORDER BY date_added DESC";
 
             $datos = parent::obtenerDatos($query);           
