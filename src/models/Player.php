@@ -1060,6 +1060,8 @@
             ,nacionalities.nationalities_names AS nationalities_names
             ,positions.id AS position_id
             ,positions.name AS position_name
+            ,players.map_position AS map_main_position
+            ,map_position_translate.name AS map_main_position_name
             ,second_position.second_positions_codes AS second_positions_codes
             ,second_position.second_positions_names AS second_positions_names 
 			,players.club_id
@@ -1075,10 +1077,22 @@
             ,IFNULL(injuries.injury_description,'ok') AS health_status
 
             FROM  $db.players players
-            INNER JOIN $db.clubs clubs ON clubs.id = players.club_id
-            LEFT JOIN $db.teams teams  ON teams.id = players.team_id
-            INNER JOIN $db.country_codes countries ON countries.country_code = clubs.country_code
-            LEFT JOIN $db.division divisions ON divisions.id = teams.division_id
+
+            INNER JOIN $db.clubs clubs 
+                ON clubs.id = players.club_id
+
+            LEFT JOIN $db.teams teams  
+                ON teams.id = players.team_id
+
+            INNER JOIN $db.country_codes countries 
+                ON countries.country_code = clubs.country_code
+
+            LEFT JOIN $db.division divisions 
+                ON divisions.id = teams.division_id
+
+            LEFT JOIN $db.map_position_translate map_position_translate 
+                ON map_position_translate.code = players.map_position 
+                AND map_position_translate.translate_code='$language_code'
 
             LEFT JOIN(
 				SELECT

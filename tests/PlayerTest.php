@@ -85,14 +85,14 @@ class PlayerTest extends TestCase{
 
     public function testgetAvailablePlayersWithFilters(){
 
-        $continent_code= null; 
+        $continent_code= 'SA'; 
         $country_code = 'AR'; 
         $category_id = 1;
         $division_id = 1;
         $club_id = 1;
         $nationality_code = null;
-        $position_id = null;
-        $second_positions_codes = null;
+        $position_id = 4;
+        $second_positions_codes = 'RW,LW';
         $age_range = null;
         $height_range = null;
         $weight_range = null;
@@ -126,7 +126,7 @@ class PlayerTest extends TestCase{
         
         //var_dump($dataFilters);
 
-        $this->assertFalse(empty($dataFilters)); 
+        $this->assertIsArray($dataFilters); 
       
     }
 
