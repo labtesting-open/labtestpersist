@@ -52,7 +52,8 @@
             $language_code = null,
             $order = null,
             $order_sense = null,
-            $find = null                     
+            $find = null,
+            $user_id = null                     
             ){
             
             $db = parent::getDataBase();
@@ -88,6 +89,24 @@
                 $findOut = '';
             }
 
+            $own_favourite_field ='';
+            $own_favourite_join ='';
+
+            if($user_id != null && is_numeric($user_id)){
+
+                $own_favourite_field = ",IF( ISNULL(user_id_mark), 'false', 'true') AS own_favourite ";
+                $own_favourite_join = "
+                LEFT JOIN (
+                    SELECT
+                    player_id
+                    ,date_added
+                    ,date_news_checked 
+                    ,user_id AS user_id_mark 
+                    FROM $db.users_favorites_players
+                    where user_id = $user_id
+                ) AS favorites ON favorites.player_id = players.id";
+
+            }
 
             $query = "
             SELECT
@@ -114,6 +133,7 @@
                 THEN injury_description
                 ELSE null
             END AS health_detail 
+            $own_favourite_field
 
             FROM $db.players players   
             
@@ -218,6 +238,8 @@
 				GROUP BY minutes.player_id
             ) match_time ON match_time.player_id = players.id
 
+            $own_favourite_join
+            
             WHERE players.club_id=$club_id 
             and players.team_id=$team_id
             and players.position_id=$position_id
@@ -653,7 +675,7 @@
 
 
 
-        public function getPlayerPerfil($player_id, $language_code = null){
+        public function getPlayerPerfil($player_id, $language_code = null, $user_id = null){
 
             $db = parent::getDataBase(); 
 
@@ -662,6 +684,25 @@
             $imgFolderClub = $this->getImgFolderClubs();
 
             $language_code = (isset($language_code) && $language_code != null)? $language_code: 'GB';
+
+            $own_favourite_field ='';
+            $own_favourite_join ='';
+
+            if($user_id != null && is_numeric($user_id)){
+
+                $own_favourite_field = ",IF( ISNULL(user_id_mark), 'false', 'true') AS own_favourite ";
+                $own_favourite_join = "
+                LEFT JOIN (
+                    SELECT
+                    player_id
+                    ,date_added
+                    ,date_news_checked 
+                    ,user_id AS user_id_mark 
+                    FROM $db.users_favorites_players
+                    where user_id = $user_id
+                ) AS favorites ON favorites.player_id = pl.id";
+
+            }
 
             $query = "
             SELECT
@@ -688,7 +729,8 @@
             pl.map_position AS map_main_position,     
             map_position_translate.name AS map_main_position_name,
             colorposition.color_hexa
-            
+            $own_favourite_field
+
             FROM $db.players pl
             LEFT JOIN $db.clubs clubs ON
                 pl.club_id = clubs.id
@@ -706,6 +748,7 @@
                 map_position_translate.code = pl.map_position and map_position_translate.translate_code='$language_code'
             LEFT OUTER JOIN $db.positions colorposition
                 ON colorposition.id = pl.position_id
+            $own_favourite_join    
             WHERE
                 pl.id =$player_id AND ft.country_code = '$language_code'" ;        
 
