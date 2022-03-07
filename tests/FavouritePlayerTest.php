@@ -47,7 +47,7 @@ class FavouritePlayerTest extends TestCase{
     public function testDeleteFavourite(){
         
         $user_id = 1;
-        $player_id = 2;
+        $player_id = 1;
         
         //$actionResult = $this->favourite->delete($user_id, $player_id);
         

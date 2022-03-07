@@ -26,7 +26,8 @@
             SELECT
             player_id 
             ,user_id
-            ,date_added 
+            ,date_added
+            ,date_news_checked 
             FROM $db.users_favorites_players
             $where
             ORDER BY date_added DESC";
@@ -43,8 +44,8 @@
 
             $db = parent::getDataBase();            
 
-            $query="INSERT INTO $db.users_favorites_players(user_id, player_id, date_added)
-            VALUES ($user_id, $player_id, date(now()))";
+            $query="INSERT INTO $db.users_favorites_players(user_id, player_id, date_added, date_news_checked)
+            VALUES ($user_id, $player_id, date(now()), date(now()))";
 
             $verifica = parent::nonQuery($query);
  
