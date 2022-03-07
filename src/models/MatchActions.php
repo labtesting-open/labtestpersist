@@ -331,8 +331,9 @@
            
 
             $query = "
-            SELECT 
-            match_actions.match_id
+            SELECT
+            match_actions.id 
+            ,match_actions.match_id
             ,match_actions.match_date
             ,actions.name AS action_name            
             ,clubsHome.name AS club_home_name
