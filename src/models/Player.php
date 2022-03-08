@@ -1094,11 +1094,13 @@
                 $own_favourite_join = "
                 LEFT JOIN (
                     SELECT
-                    match_action_id 
+                    player_id
+                    ,date_added
+                    ,date_news_checked 
                     ,user_id AS user_id_mark 
-                    FROM $db.users_favorites_actions
+                    FROM $db.users_favorites_players
                     where user_id = $user_id
-                ) AS favorites ON favorites.match_action_id = players.id";
+                ) AS favorites ON favorites.player_id = players.id";
 
             }
 

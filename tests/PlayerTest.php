@@ -92,7 +92,7 @@ class PlayerTest extends TestCase{
         $club_id = 1;
         $nationality_code = null;
         $position_id = 4;
-        $second_positions_codes = 'RW,LW';
+        $second_positions_codes = null;
         $age_range = null;
         $height_range = null;
         $weight_range = null;
@@ -102,6 +102,7 @@ class PlayerTest extends TestCase{
         $page = 1;
         $limit = 100;
         $language_code = 'ES';
+        $user_id = 1;
 
         $dataFilters = $this->player->getAvailablePlayersWithFilters(
             $continent_code, 
@@ -120,7 +121,8 @@ class PlayerTest extends TestCase{
             $orderSense,
             $page,
             $limit,
-            $language_code
+            $language_code,
+            $user_id
         );        
 
         
