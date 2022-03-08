@@ -239,7 +239,7 @@
             ) match_time ON match_time.player_id = players.id
 
             $own_favourite_join
-            
+
             WHERE players.club_id=$club_id 
             and players.team_id=$team_id
             and players.position_id=$position_id
@@ -1074,7 +1074,8 @@
             $whereSecondPositions,
             $joinSecondPositions,
             $where,
-            $language_code
+            $language_code,
+            $user_id
         )
         {
             
@@ -1083,6 +1084,23 @@
             $imgFolderClub = $this->getImgFolderClubs();
             $imgFolderFlags = $this->getImgFolderFlags();
             $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
+
+            $own_favourite_field ='';
+            $own_favourite_join ='';
+
+            if($user_id != null && is_numeric($user_id)){
+
+                $own_favourite_field = ",IF( ISNULL(user_id_mark), 'false', 'true') AS own_favourite ";
+                $own_favourite_join = "
+                LEFT JOIN (
+                    SELECT
+                    match_action_id 
+                    ,user_id AS user_id_mark 
+                    FROM $db.users_favorites_actions
+                    where user_id = $user_id
+                ) AS favorites ON favorites.match_action_id = players.id";
+
+            }
 
             $query = "
             SELECT  
@@ -1118,6 +1136,7 @@
             ,divisions.division_class_id AS division_class_id
             ,teams.category_id AS category_id
             ,IFNULL(injuries.injury_description,'ok') AS health_status
+            $own_favourite_field
 
             FROM  $db.players players
 
@@ -1136,6 +1155,8 @@
             LEFT JOIN $db.map_position_translate map_position_translate 
                 ON map_position_translate.code = players.map_position 
                 AND map_position_translate.translate_code='$language_code'
+
+            $own_favourite_join
 
             LEFT JOIN(
 				SELECT
@@ -1169,6 +1190,7 @@
                 ) AS nationalities_full ON nationalities_full.player_id = player_nacionality.player_id                  
                 $whereNationality
             ) AS nacionalities ON nacionalities.player_id = players.id
+
             LEFT JOIN $db.positions positions ON positions.id = players.position_id            
             $joinSecondPositions JOIN (
                 SELECT
@@ -1368,7 +1390,8 @@
             $orderSense = null,
             $page = null,
             $limit = null,
-            $language_code = null
+            $language_code = null,
+            $user_id = null
 
         )
         {
@@ -1400,7 +1423,8 @@
                 $filters["whereSecondPositions"],
                 $filters["joinSecondPositions"], 
                 $filters["where"],
-                $language_code
+                $language_code,
+                $user_id
             );
 
             $order = $filters["order"];
@@ -1467,7 +1491,8 @@
                 $filters["whereSecondPositions"],
                 $filters["joinSecondPositions"], 
                 $filters["where"],
-                $language_code
+                $language_code,
+                null
             );          
 
             $query = "SELECT count(*) AS totalrows FROM (
