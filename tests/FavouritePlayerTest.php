@@ -23,7 +23,7 @@ class FavouritePlayerTest extends TestCase{
 
         $data = $this->favourite->getFavouritePlayersByUser($user_id);
         
-        var_dump($data);
+        //var_dump($data);
 
         $this->assertIsArray($data); 
     }
@@ -55,6 +55,34 @@ class FavouritePlayerTest extends TestCase{
         
         $actionResult = 1;
         
+        $this->assertIsInt($actionResult);
+
+    }
+
+    public function testAddFavouriteList(){
+        
+        $user_id = 1;
+        $playerListArray = array(100,105,110);
+        
+        $actionResult = $this->favourite->addList($user_id, $playerListArray);
+
+        //var_dump($actionResult);
+        //$actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
+    }
+
+    public function testDeleteFavouriteList(){
+        
+        $user_id = 1;
+        $playerListArray = array(100,105,110);
+        
+        $actionResult = $this->favourite->deleteList($user_id, $playerListArray);
+
+        var_dump($actionResult);
+        //$actionResult = 1;        
+
         $this->assertIsInt($actionResult);
 
     }
