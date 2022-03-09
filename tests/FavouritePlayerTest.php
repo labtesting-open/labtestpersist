@@ -85,8 +85,63 @@ class FavouritePlayerTest extends TestCase{
 
         $this->assertIsInt($actionResult);
 
-    }
-    
+    }    
 
+    public function testGetFavouritePlayers()
+    {
+        $user_id = 1;
+        $player_id = null;
+        $orderField = null;
+        $orderSense = null;
+        $page = null;
+        $limit = null;
+        $language_code = null;
+        
+        $favouriteList = $this->favourite->getFavouritePlayers(
+            $user_id
+            ,$player_id
+            ,$orderField
+            ,$orderSense
+            ,$page
+            ,$limit
+            ,$language_code
+        );
+
+        //var_dump($favouriteList);
+
+        $this->assertIsArray($favouriteList);
+
+    }
+
+
+    public function testGetFavouritePlayersTotalRows()
+    {
+        $user_id = 0;
+        $player_id = null;
+        $orderField = null;
+        $orderSense = null;
+        $page = null;
+        $limit = 5;
+        $language_code = null;
+        
+        $pagesRows = $this->favourite->getFavouritePlayersTotalRows(
+            $user_id
+            ,$player_id
+            ,$orderField
+            ,$orderSense
+            ,$page
+            ,$limit
+            ,$language_code
+        );
+
+        //var_dump($pagesRows);
+
+        $totalPages = ceil($pagesRows / $limit);
+
+        echo "total rows: $pagesRows - total pages: $totalPages";
+
+        $this->assertIsInt($pagesRows);
+
+    }
 
 }

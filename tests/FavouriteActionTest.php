@@ -57,7 +57,7 @@ class FavouriteActionTest extends TestCase{
         
         $this->assertIsInt($actionResult);
 
-    }
+    }  
     
 
 
