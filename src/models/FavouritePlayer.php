@@ -63,7 +63,8 @@
             $mainQuery = $this->getQueryFavouritePlayers(
                 $db              
                 ,$filters["where"]
-                ,$language_code                
+                ,$language_code
+                ,$user_id                
             );    
 
             $query = "SELECT count(*) AS totalrows FROM (
@@ -102,7 +103,8 @@
             $query = $this->getQueryFavouritePlayers(
                 $db              
                 ,$filters["where"]
-                ,$language_code                
+                ,$language_code
+                ,$user_id                
             );
 
             $order = $filters["order"];
@@ -178,7 +180,8 @@
         public function getQueryFavouritePlayers(
             $db
             ,$where
-            ,$language_code            
+            ,$language_code
+            ,$user_id = null            
         )
         {
          
@@ -187,6 +190,25 @@
             $imgFolderClub = $this->getImgFolderClubs();
             $imgFolderFlags = $this->getImgFolderFlags();
             $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();
+
+            $own_favourite_field ='';
+            $own_favourite_join ='';
+
+            if($user_id != null && is_numeric($user_id)){
+
+                $own_favourite_field = ",IF( ISNULL(user_id_mark), 'false', 'true') AS own_favourite ";
+                $own_favourite_join = "
+                LEFT JOIN (
+                    SELECT
+                    player_id
+                    ,date_added
+                    ,date_news_checked 
+                    ,user_id AS user_id_mark 
+                    FROM $db.users_favorites_players
+                    where user_id = $user_id
+                ) AS favorites ON favorites.player_id = players.id";
+
+            }
 
             $query="
             SELECT
@@ -199,7 +221,8 @@
             ,positions.name as map_position_name
             ,nacionalities.nacionalities_names
             ,nacionalities.nacionalities_flags
-                        
+            $own_favourite_field
+
             FROM $db.users_favorites_players favourites
 
             LEFT OUTER JOIN $db.players players 
@@ -213,6 +236,8 @@
 
             LEFT OUTER JOIN $db.positions colorposition
             ON colorposition.id = players.position_id
+
+            $own_favourite_join
 
             LEFT JOIN (
             SELECT 

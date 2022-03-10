@@ -244,13 +244,15 @@ class PlayerTest extends TestCase{
         $language_code = null;
         $order = null;
         $order_sense = null;
+        $user_id = null;
 
         $searchResult = $this->player->searchQuick(
             $find, 
             $limit, 
             $language_code, 
             $order, 
-            $order_sense
+            $order_sense,
+            $user_id
         );
 
         //var_dump($searchResult);

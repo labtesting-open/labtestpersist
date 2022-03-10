@@ -563,10 +563,11 @@
 
         public function searchQuick(
             $find = null, 
-            $limit, 
-            $language_code, 
-            $order, 
-            $order_sense
+            $limit = null, 
+            $language_code = null, 
+            $order = null, 
+            $order_sense = null,
+            $user_id = null
             ){  
 
             if(is_null($find) || empty($find)) return array();
@@ -597,6 +598,25 @@
 
             $sense = ( $order_sense != null && $order_sense =='ASC')?" ASC ":" DESC ";
 
+            $own_favourite_field ='';
+            $own_favourite_join ='';
+
+            if($user_id != null && is_numeric($user_id)){
+
+                $own_favourite_field = ",IF( ISNULL(user_id_mark), 'false', 'true') AS own_favourite ";
+                $own_favourite_join = "
+                LEFT JOIN (
+                    SELECT
+                    player_id
+                    ,date_added
+                    ,date_news_checked 
+                    ,user_id AS user_id_mark 
+                    FROM $db.users_favorites_players
+                    where user_id = $user_id
+                ) AS favorites ON favorites.player_id = players.id";
+
+            }
+
             $query = "
             SELECT
             players.id AS player_id,             
@@ -610,6 +630,7 @@
             colorposition.color_hexa,
             nacionalities.nacionalities_names,
             nacionalities.nacionalities_flags
+            $own_favourite_field
 
             FROM $db.players players
 
@@ -632,6 +653,8 @@
                 GROUP BY player_nacionality.player_id
             ) nacionalities ON nacionalities.player_id = players.id
 
+            $own_favourite_join
+            
             WHERE 
             LOWER( CONCAT(players.name, ' ', players.surname)) like LOWER('%$findScape%')  
             ORDER BY $orderfields $sense    
