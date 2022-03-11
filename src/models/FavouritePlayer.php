@@ -321,7 +321,134 @@
             
             return $affected;          
 
-       }     
+       }
+       
+       public function getPlayerNews($user_id, $language_code = null)
+       {
+
+        $db = parent::getDataBase(); 
+        
+        $language_code = (isset($language_code))? $language_code: 'GB';
+
+        $imgFolderClub = $this->getImgFolderClubs();
+        $imgFolderFlags = $this->getImgFolderFlags();
+        $imgFolderPlayersProfile = $this->getImgFolderPlayerProfiles();        
+
+        $query = "
+        SELECT
+        match_actions.id AS match_action_id
+        ,match_actions.player_id
+        ,CONCAT(players.name, ' ', players.surname) AS player_fullname
+        ,IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url
+        ,clubs.name AS club_name
+        ,IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS club_logo
+        ,positions.name as map_position_name
+        ,colorposition.color_hexa
+        ,nacionalities.nacionalities_names
+        ,nacionalities.nacionalities_flags
+        ,match_actions.date_added AS date_match_action_added
+        ,date_player_in_favourites
+        ,matches.match_date
+        ,clubsHome.name AS club_home_name
+        ,clubsVisitor.name AS club_visitor_name
+        ,matches.goals_home_team
+        ,matches.goals_visitor_team
+        ,countries.name AS country_name
+        ,division.name AS division_name
+
+        FROM $db.match_actions match_actions
+
+        INNER JOIN $db.matches matches
+            ON matches.id = match_actions.match_id
+            
+        LEFT JOIN $db.players players
+            ON players.id = match_actions.player_id    
+
+        LEFT JOIN $db.clubs clubs 
+            ON clubs.id = players.club_id
+            
+        LEFT OUTER JOIN $db.map_position_translate positions 
+            ON positions.code = players.map_position and positions.translate_code='$language_code'
+            
+        LEFT OUTER JOIN $db.positions colorposition
+            ON colorposition.id = players.position_id
+
+        LEFT JOIN (
+            SELECT 
+            player_nacionality.player_id AS player_id, 
+            GROUP_CONCAT(countries.name) AS nacionalities_names,
+            GROUP_CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS nacionalities_flags
+            FROM $db.players_nacionalities player_nacionality
+            LEFT JOIN $db.country_codes countries
+            ON countries.country_code = player_nacionality.country_code
+            GROUP BY player_nacionality.player_id
+        ) nacionalities ON nacionalities.player_id = players.id
+                    
+        LEFT JOIN $db.clubs clubsHome
+            ON clubsHome.id = matches.club_id_home
+        LEFT JOIN $db.clubs clubsVisitor 
+            ON clubsVisitor.id = matches.club_id_visitor
+        LEFT JOIN $db.country_codes countries
+            ON countries.country_code = matches.country_code
+        LEFT JOIN $db.division division
+            ON division.id = matches.division_id    
+        INNER JOIN(
+        SELECT
+        favorites_players.player_id
+        ,favorites_players.date_added AS date_player_in_favourites
+        FROM $db.users_favorites_players favorites_players
+        WHERE favorites_players.user_id = $user_id
+        ) favourites ON favourites.player_id = match_actions.player_id
+
+        WHERE match_actions.date_added > date_player_in_favourites
+        and match_actions.id NOT IN (
+        SELECT
+        match_action_id 
+        FROM $db.users_match_actions_views 
+        WHERE user_id = $user_id)";                   
+
+        $datos = parent::obtenerDatos($query);           
+
+        return $datos;
+       }
+
+
+       public function setActionListAsViewed($user_id, $arrayList)
+       {           
+
+           $db = parent::getDataBase();            
+
+           $query="INSERT INTO $db.users_match_actions_views(
+               user_id, 
+               match_action_id)VALUES";
+           
+           foreach($arrayList AS $key => $value)
+           {
+               $query.=($key > 0)?',':'';
+               $query.="($user_id, $value)";
+           }                
+
+           $verifica = parent::nonQuery($query);
+
+           return ($verifica)? 1 : 0;           
+
+       }
+
+
+       public function setActionAsViewed($user_id, $match_action_id)
+       {           
+
+           $db = parent::getDataBase();            
+
+           $query="INSERT INTO $db.users_favorites_players(user_id, match_action_id)
+           VALUES ($user_id, $match_action_id)";
+
+           $verifica = parent::nonQuery($query);
+
+           return ($verifica)? 1 : 0;           
+
+       }
+
        
 
 
