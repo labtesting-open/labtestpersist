@@ -1144,6 +1144,7 @@
             END AS foot
             ,nacionalities.nationalities_flags AS nationalities_flags
             ,nacionalities.nationalities_names AS nationalities_names
+            ,colorposition.color_hexa
             ,positions.id AS position_id
             ,positions.name AS position_name
             ,players.map_position AS map_main_position
@@ -1180,6 +1181,9 @@
             LEFT JOIN $db.map_position_translate map_position_translate 
                 ON map_position_translate.code = players.map_position 
                 AND map_position_translate.translate_code='$language_code'
+
+            LEFT OUTER JOIN elites17_wizard.positions colorposition
+                ON colorposition.id = players.position_id
 
             $own_favourite_join
 
