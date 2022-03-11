@@ -214,6 +214,7 @@
             SELECT
             favourites.player_id 
             ,CONCAT(players.name, ' ', players.surname) AS player_fullname
+            ,TIMESTAMPDIFF(YEAR,players.birthdate,CURDATE()) AS player_age
             ,IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url
             ,clubs.name AS club_name
             ,IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS club_logo
