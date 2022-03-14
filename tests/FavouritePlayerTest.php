@@ -138,10 +138,100 @@ class FavouritePlayerTest extends TestCase{
 
         $totalPages = ceil($pagesRows / $limit);
 
-        echo "total rows: $pagesRows - total pages: $totalPages";
+        //echo "total rows: $pagesRows - total pages: $totalPages";
 
         $this->assertIsInt($pagesRows);
 
     }
+
+    public function testGetPlayerNews()
+    {
+        $user_id = 1;       
+        $language_code = 'ES';
+        
+        $playerNews = $this->favourite->getPlayerNews(
+            $user_id,           
+            $language_code
+        );
+
+        //var_dump($playerNews);
+
+        $this->assertIsArray($playerNews);
+
+    }
+
+    public function testSetActionAsViewed()
+    {
+        $user_id = 1;       
+        $match_action_id = 68;
+        
+        // $actionResult = $this->favourite->setActionAsViewed(
+        //     $user_id,           
+        //     $match_action_id
+        // );
+
+        // var_dump($actionResult);
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
+    }
+
+    public function testSetActionListAsViewed()
+    {
+        $user_id = 1;       
+        $match_action_id_ListArray = array(69,70,71);
+        
+        // $actionResult = $this->favourite->setActionListAsViewed(
+        //     $user_id,           
+        //     $match_action_id_ListArray
+        // );
+
+        // var_dump($actionResult);
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
+    }
+
+    public function testDeleteActionsViewed()
+    {
+        $user_id = 1;       
+        $date_from = '2022-03-11';
+        
+        // $actionResult = $this->favourite->deleteActionsViewed(
+        //     $user_id,           
+        //     $date_from
+        // );
+
+        // var_dump($actionResult);
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
+    }
+
+    public function testUpdateDateChecked()
+    {
+        $user_id = 1; 
+        $player_id = 14;      
+        $date_from = '2022-03-11';
+        
+        // $actionResult = $this->favourite->updateDateChecked(
+        //     $user_id,
+        //     $player_id,           
+        //     $date_from
+        // );
+
+        //var_dump($actionResult);
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
+    }
+
+    
+
+
 
 }

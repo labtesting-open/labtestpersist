@@ -322,6 +322,59 @@
             return $affected;          
 
        }
+
+       function validateDate($string)
+       {  
+           $valid = false;
+
+           // If the string can be converted to UNIX timestamp
+           if (strtotime($string)) $valid = true;           
+           
+           return $valid;
+        
+       }      
+
+
+       public function updateDateChecked(
+           $user_id = null, 
+           $player_id = null,
+           $dateNewsChecked = null
+        )
+        {
+            $db = parent::getDataBase();
+
+            $where="";
+           
+            if($user_id != null)
+            {
+             $where.=(empty($where))?' WHERE ':' and ';
+             $where.= " user_id=$user_id ";
+            }
+ 
+            if($player_id != null)
+            {
+             $where.=(empty($where))?' WHERE ':' and ';
+             $where.= " player_id=$player_id ";
+            }
+            
+            $dateSet = " date(now()) ";
+
+            if($dateNewsChecked != null && $this->validateDate($dateNewsChecked))
+            {            
+                $dateSet = "'$dateNewsChecked' ";
+            }
+
+            $query="UPDATE $db.users_favorites_players
+            set date_news_checked = $dateSet
+            $where";                   
+
+            $affected = parent::nonQuery($query);
+            
+            return $affected;          
+
+       }
+
+
        
        public function getPlayerNews($user_id, $language_code = null)
        {
@@ -396,11 +449,12 @@
         SELECT
         favorites_players.player_id
         ,favorites_players.date_added AS date_player_in_favourites
+        ,favorites_players.date_news_checked AS date_news_ckecked
         FROM $db.users_favorites_players favorites_players
         WHERE favorites_players.user_id = $user_id
         ) favourites ON favourites.player_id = match_actions.player_id
 
-        WHERE match_actions.date_added > date_player_in_favourites
+        WHERE match_actions.date_added > date_news_ckecked
         and match_actions.id NOT IN (
         SELECT
         match_action_id 
@@ -420,12 +474,12 @@
 
            $query="INSERT INTO $db.users_match_actions_views(
                user_id, 
-               match_action_id)VALUES";
+               match_action_id, date_viewed)VALUES";
            
            foreach($arrayList AS $key => $value)
            {
                $query.=($key > 0)?',':'';
-               $query.="($user_id, $value)";
+               $query.="($user_id, $value, date(now()))";
            }                
 
            $verifica = parent::nonQuery($query);
@@ -440,14 +494,46 @@
 
            $db = parent::getDataBase();            
 
-           $query="INSERT INTO $db.users_favorites_players(user_id, match_action_id)
-           VALUES ($user_id, $match_action_id)";
+           $query="INSERT INTO $db.users_match_actions_views(
+            user_id, 
+            match_action_id, 
+            date_viewed)VALUES(
+            $user_id, 
+            $match_action_id, 
+            date(now()))";
 
            $verifica = parent::nonQuery($query);
 
-           return ($verifica)? 1 : 0;           
+           return ($verifica)? 1 : 0;          
 
        }
+
+       public function deleteActionsViewed($user_id = null, $dateFrom = null)
+       {          
+
+           $db = parent::getDataBase();
+           
+           $where="";
+           
+           if($user_id != null)
+           {
+            $where.=(empty($where))?' WHERE ':' and ';
+            $where.= " user_id=$user_id ";
+           }
+
+           if($dateFrom != null)
+           {
+            $where.=(empty($where))?' WHERE ':' and ';
+            $where.= " date_viewed > '$dateFrom'";
+           }
+
+           $query="DELETE FROM $db.users_match_actions_views $where";                   
+
+           $affected = parent::nonQuery($query);
+           
+           return $affected;          
+
+      }
 
        
 
