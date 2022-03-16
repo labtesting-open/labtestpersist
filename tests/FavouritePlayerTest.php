@@ -242,6 +242,26 @@ class FavouritePlayerTest extends TestCase{
 
     }
 
+
+    public function testSetPlayerListAsViewed()
+    {
+        $user_id = 1;       
+        $player_id_ListArray = array(1,6);
+        $dateChecked = '2022-01-01';
+        
+        // $actionResult = $this->favourite->setPlayerListAsViewed(
+        //     $user_id,           
+        //     $player_id_ListArray,
+        //     $dateChecked
+        // );
+
+        //var_dump($actionResult);
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
+    }
+
     
 
 

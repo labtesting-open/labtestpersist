@@ -503,6 +503,49 @@
 
        }
 
+       public function setPlayerListAsViewed(
+           $user_id = null, 
+           $arrayList = null,
+           $dateNewsChecked = null
+        )
+        {           
+
+            $db = parent::getDataBase();
+
+            $dateSet = " date(now()) ";
+            
+            if($dateNewsChecked != null && $this->validateDate($dateNewsChecked))
+            {            
+                $dateSet = "'$dateNewsChecked' ";
+            }
+
+            $where="";
+           
+            if($user_id != null)
+            {
+                $where.=(empty($where))?' WHERE ':' and ';
+                $where.= " user_id=$user_id ";
+            }
+
+            if(!empty($arrayList)){
+
+                $arrToString = implode(',',$arrayList );
+
+                $where .= " and player_id in ($arrToString) ";
+            }                        
+
+            $query="UPDATE $db.users_favorites_players
+            set date_news_checked = $dateSet
+            $where";                            
+
+            $verifica = parent::nonQuery($query);
+
+            return ($verifica)? 1 : 0;           
+
+        }
+
+
+
 
        public function setActionAsViewed($user_id, $match_action_id)
        {           
