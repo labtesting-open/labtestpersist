@@ -432,7 +432,7 @@
         ,nacionalities.nacionalities_names
         ,nacionalities.nacionalities_flags
         ,match_actions.date_added AS date_match_action_added
-        ,date_player_in_favourites        
+        ,date_news_ckecked        
 
         FROM $db.match_actions match_actions        
             
@@ -468,12 +468,7 @@
         WHERE favorites_players.user_id = $user_id
         ) favourites ON favourites.player_id = match_actions.player_id
 
-        WHERE match_actions.date_added > date_news_ckecked
-        and match_actions.id NOT IN (
-        SELECT
-        match_action_id 
-        FROM $db.users_match_actions_views 
-        WHERE user_id = $user_id)
+        WHERE match_actions.date_added > date_news_ckecked        
         GROUP BY match_actions.player_id";                   
 
         $datos = parent::obtenerDatos($query);           
