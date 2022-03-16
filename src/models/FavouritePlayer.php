@@ -389,8 +389,8 @@
 
         $query = "
         SELECT
-        match_actions.id AS match_action_id
-        ,match_actions.player_id
+        match_actions.player_id
+        ,COUNT(match_actions.id) AS total_match_actions       
         ,CONCAT(players.name, ' ', players.surname) AS player_fullname
         ,IF( ISNULL(players.img_profile), null,CONCAT('$imgFolderPlayersProfile', players.img_profile)) AS img_profile_url
         ,clubs.name AS club_name
@@ -400,19 +400,9 @@
         ,nacionalities.nacionalities_names
         ,nacionalities.nacionalities_flags
         ,match_actions.date_added AS date_match_action_added
-        ,date_player_in_favourites
-        ,matches.match_date
-        ,clubsHome.name AS club_home_name
-        ,clubsVisitor.name AS club_visitor_name
-        ,matches.goals_home_team
-        ,matches.goals_visitor_team
-        ,countries.name AS country_name
-        ,division.name AS division_name
+        ,date_player_in_favourites        
 
-        FROM $db.match_actions match_actions
-
-        INNER JOIN $db.matches matches
-            ON matches.id = match_actions.match_id
+        FROM $db.match_actions match_actions        
             
         LEFT JOIN $db.players players
             ON players.id = match_actions.player_id    
@@ -435,16 +425,8 @@
             LEFT JOIN $db.country_codes countries
             ON countries.country_code = player_nacionality.country_code
             GROUP BY player_nacionality.player_id
-        ) nacionalities ON nacionalities.player_id = players.id
-                    
-        LEFT JOIN $db.clubs clubsHome
-            ON clubsHome.id = matches.club_id_home
-        LEFT JOIN $db.clubs clubsVisitor 
-            ON clubsVisitor.id = matches.club_id_visitor
-        LEFT JOIN $db.country_codes countries
-            ON countries.country_code = matches.country_code
-        LEFT JOIN $db.division division
-            ON division.id = matches.division_id    
+        ) nacionalities ON nacionalities.player_id = players.id                    
+        
         INNER JOIN(
         SELECT
         favorites_players.player_id
@@ -459,7 +441,8 @@
         SELECT
         match_action_id 
         FROM $db.users_match_actions_views 
-        WHERE user_id = $user_id)";                   
+        WHERE user_id = $user_id)
+        GROUP BY match_actions.player_id";                   
 
         $datos = parent::obtenerDatos($query);           
 
