@@ -230,6 +230,18 @@ class FavouritePlayerTest extends TestCase{
 
     }
 
+    public function testGetTotalNewActions()
+    {
+        $user_id = 1; 
+        
+        $totalNewActions = $this->favourite->getTotalNewActions($user_id);
+
+        //var_dump($totalNewActions);
+
+        $this->assertIsInt($totalNewActions);
+
+    }
+
     
 
 

@@ -374,6 +374,38 @@
 
        }
 
+       public function getTotalNewActions($user_id)
+       {
+
+        $db = parent::getDataBase();
+
+        $query = "
+        SELECT
+        count(*) AS total_actions
+        FROM $db.match_actions match_actions
+
+        INNER JOIN(
+        SELECT
+        favorites_players.player_id
+        ,favorites_players.date_added AS date_player_in_favourites
+        ,favorites_players.date_news_checked AS date_news_ckecked
+        FROM $db.users_favorites_players favorites_players
+        WHERE favorites_players.user_id = $user_id
+        ) favourites ON favourites.player_id = match_actions.player_id
+        
+        WHERE match_actions.date_added > date_news_ckecked
+        AND match_actions.id NOT IN (
+        SELECT
+        match_action_id 
+        FROM $db.users_match_actions_views 
+        WHERE user_id = $user_id)";
+
+        $datos = parent::obtenerDatos($query);           
+
+        return (int)$datos[0]['total_actions'];
+
+       } 
+
 
        
        public function getPlayerNews($user_id, $language_code = null)
