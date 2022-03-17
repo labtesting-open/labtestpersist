@@ -37,8 +37,9 @@ class SavedSearchTest extends TestCase{
         $target = 'player';
         $paramsJSON="{\"continent_code\":\"SA\",\"country_code\":\"AR\",\"category_id\":\"1\",\"division_id\":\"1\",\"club_id\":\"1\",\"position_id\":\"4\",\"target\":\"player\",\"result\":\"20\"}";
         $searchResult=10;
+        $search_name = 'pepe';
         
-        //$actionResult = $this->savedSearch->add($user_id, $target, $paramsJSON, $searchResult);
+        //$actionResult = $this->savedSearch->add($user_id, $target, $paramsJSON, $search_name, $searchResult);
 
         //var_dump($actionResult);
         $actionResult = 1;        
@@ -64,12 +65,14 @@ class SavedSearchTest extends TestCase{
     {  
         $saved_search_id = 8;            
         $paramsJSON = "{\"continent_code\":\"SA\",\"pais\":\"AR\",\"category_id\":\"1\",\"division_id\":\"1\",\"club_id\":\"1\",\"position_id\":\"4\",\"target\":\"player\",\"result\":\"20\"}";
-        $searchResult = 74;            
+        $searchResult = 74;
+        $search_name = 'pepe';            
 
         // $actionResult = $this->savedSearch->update(
         //     $saved_search_id, 
         //     $paramsJSON,
-        //     $searchResult
+        //     $searchResult,
+        //     $search_name
         // );
         
         $actionResult = 1;        

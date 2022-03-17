@@ -10,13 +10,25 @@
             $user_id, 
             $target, 
             $paramsJSON,
+            $search_name,
             $searchResult
         )
         {
             $db = parent::getDataBase();
 
-            $query="INSERT INTO $db.saved_searchs(user_id, target, params, result, date_update)
-            VALUES($user_id, '$target','$paramsJSON',$searchResult, DATE(NOW()))";
+            $queryHead="INSERT INTO $db.saved_searchs(user_id, target, params, result, date_update";
+            $queryBody = "VALUES($user_id, '$target','$paramsJSON',$searchResult, DATE(NOW())";            
+
+            if(!is_null($search_name))
+            {
+                $queryHead.=', search_name)';
+                $queryBody.=", '$search_name')";
+            }else{
+                $queryHead.=') ';
+                $queryBody.=') ';
+            }
+
+            $query = $queryHead.$queryBody;            
             
             $verifica = parent::nonQuery($query);
 
@@ -56,7 +68,8 @@
             id AS saved_search_id
             ,params AS params_json
             ,result
-            ,date_update 
+            ,date_update
+            ,search_name 
             FROM  $db.saved_searchs
             $where";
             
@@ -107,7 +120,8 @@
        public function update(           
         $saved_search_id,
         $paramsJSON = null,
-        $searchResult = null        
+        $searchResult = null,
+        $search_name = null        
         )
         {
             if(empty($saved_search_id)) return 0;
@@ -126,7 +140,12 @@
             if(!is_null($searchResult))
             {             
                 $set.= ", result=$searchResult ";
-            }            
+            }
+            
+            if(!is_null($search_name))
+            {             
+                $set.= ", search_name='$search_name' ";
+            }  
 
 
             $query="UPDATE $db.saved_searchs            
