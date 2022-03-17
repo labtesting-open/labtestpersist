@@ -45,7 +45,38 @@ class SavedSearchTest extends TestCase{
 
         $this->assertIsInt($actionResult);
 
-    } 
+    }
+
+    public function testDelete()
+    {  
+        $saved_search_id = null;     
+        $user_id = null;
+        $date_from = null;        
+
+        //$actionResult = $this->savedSearch->delete($saved_search_id, $user_id, $date_from);
+        
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult); 
+    }
+
+    public function testUpdate()
+    {  
+        $saved_search_id = 8;            
+        $paramsJSON = "{\"continent_code\":\"SA\",\"pais\":\"AR\",\"category_id\":\"1\",\"division_id\":\"1\",\"club_id\":\"1\",\"position_id\":\"4\",\"target\":\"player\",\"result\":\"20\"}";
+        $searchResult = 74;            
+
+        // $actionResult = $this->savedSearch->update(
+        //     $saved_search_id, 
+        //     $paramsJSON,
+        //     $searchResult
+        // );
+        
+        $actionResult = 1;        
+        //var_dump($actionResult);
+
+        $this->assertIsInt($actionResult); 
+    }
 
     
 
