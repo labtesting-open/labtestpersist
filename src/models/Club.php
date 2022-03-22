@@ -347,8 +347,7 @@
             INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code  
             INNER JOIN $db.teams teams ON teams.club_id = clubs.id 
             $whereSub
-            ) clubs_countries ON clubs_countries.continent_code = continents.continent_code
-            $where
+            ) clubs_countries ON clubs_countries.continent_code = continents.continent_code            
             ORDER BY continents.name" ;        
 
             $datos = parent::obtenerDatos($query);           
