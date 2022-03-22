@@ -1015,7 +1015,7 @@
             LEFT JOIN $db.country_codes country_codes 
             ON country_codes.country_code = nacionalities.country_code
             ) AS nacionalities ON nacionalities.player_id = players.id
-            $where
+            
             GROUP BY nacionalities.country_code
             ORDER BY $order $sense";        
 
