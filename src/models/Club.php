@@ -310,7 +310,11 @@
             
             $db = parent::getDataBase();            
 
-            $where = ($continent_code != null)?"WHERE  continents.continent_code='$continent_code'":"";
+            $selected = '';
+
+            if ($continent_code != null) {
+                $selected =",IF(continents.continent_code='$continent_code', 'true','false') AS selected ";
+            }
 
             $whereSub = '';
 
@@ -333,7 +337,8 @@
             $query = "
             SELECT 
             continents.continent_code,
-            continents.name 
+            continents.name
+            $selected 
             FROM $db.continents continents
             INNER JOIN (
             SELECT   
@@ -387,12 +392,7 @@
             if($continent_code != null){
                 $where.=' WHERE ';                
                 $where.= " countries.continent_code = '$continent_code'";
-            }  
-
-            if($country_code != null){
-                $where.=(empty($where))?' WHERE ':' and ';
-                $where.= " clubs.country_code = '$country_code'";
-            } 
+            }            
             
             if($category_id != null){
                 $where.=(empty($where))?' WHERE ':' and ';
@@ -404,12 +404,19 @@
                 $where.= " teams.division_id = '$division_id'";
             }
 
+            $selected = '';
+
+            if ($country_code != null) {
+                $selected =",IF(clubs.country_code='$country_code', 'true','false') AS selected ";
+            }   
+
             $query = "
             SELECT   
             DISTINCT(clubs.country_code) AS country_code,
             countries.name as name,
             CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS country_flag,
-            countries.continent_code 
+            countries.continent_code
+            $selected
             FROM  $db.clubs clubs            
             INNER JOIN  $db.country_codes countries ON countries.country_code = clubs.country_code                       
             INNER JOIN $db.teams teams ON teams.club_id = clubs.id
@@ -461,9 +468,10 @@
                 $whereSubQuery.= " teams.division_id = $division_id";
             }
 
-            if($club_id != null){
-                $whereSubQuery.=(empty($whereSubQuery))?' WHERE ':' and ';
-                $whereSubQuery.= " clubs.id = $club_id";
+            $selected = '';
+
+            if ($club_id != null) {
+                $selected =",IF(clubs.id=$club_id, 'true','false') AS selected ";
             }  
             
             $where = "";
@@ -487,6 +495,7 @@
             clubs.id,            
             clubs.name,
             CONCAT('$imgFolderClub', clubs.logo) AS logo
+            $selected
             FROM  $db.players players
             INNER JOIN (
                 SELECT

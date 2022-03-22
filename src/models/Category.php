@@ -67,20 +67,22 @@
                 $where.= " clubs.country_code = '$country_code'";
             }            
 
-            if($category_id != null){
-                $where.=( empty($where))?' WHERE ':' and ';
-                $where.= " teams.category_id = '$category_id'";
-            }
-
             if($division_id != null){
                 $where.=( empty($where))?' WHERE ':' and ';
                 $where.= " teams.division_id = '$division_id'";
-            }            
+            }
+            
+            $selected = '';
+
+            if ($category_id != null) {
+                $selected =",IF(categories.id=$category_id, 'true','false') AS selected ";
+            }
 
             $query = "
             SELECT 
             categories.id,
             categories.name
+            $selected
             FROM $db.teams teams
             INNER JOIN $db.clubs clubs ON clubs.id = teams.club_id
             INNER JOIN $db.categories categories ON categories.id = teams.category_id

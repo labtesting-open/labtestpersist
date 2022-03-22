@@ -66,10 +66,11 @@
                 $where.= " teams.category_id = $category_id";
             }           
 
-            if($division_id != null){
-                $where.=(empty($where))?' WHERE ':' and ';
-                $where.= " teams.division_id = $division_id";
-            }
+            $selected = '';
+
+            if ($division_id != null) {
+                $selected =",IF(teams.division_id=$division_id, 'true','false') AS selected ";
+            }   
             
 
             $query = "
@@ -78,6 +79,7 @@
             divisions.name,            
             clubs.country_code,
             teams.category_id
+            $selected
             FROM $db.teams teams
             INNER JOIN $db.clubs clubs ON clubs.id = teams.club_id
             INNER JOIN $db.division divisions ON divisions.id = teams.division_id  
