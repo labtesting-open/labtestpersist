@@ -929,7 +929,7 @@
             $category_id = null,
             $division_id = null,
             $club_id = null,
-            $nacionality_code = null, 
+            $nacionality_code_list = null, 
             $orderField = null,
             $orderSense = null
         )
@@ -965,12 +965,11 @@
                 $whereSubQuery.= " clubs.id = $club_id";
             }  
             
-            $where = "";
+            $selected = '';
 
-            if($nacionality_code != null){
-                $where.=' WHERE ';                
-                $where.= " nacionalities.country_code = '$nacionality_code'";
-            }           
+            if ($nacionality_code_list != null) {
+                $selected =",IF(nacionalities.country_code in ($nacionality_code_list),'true', 'false') AS selected ";
+            }
 
             $order = 'nacionalities.country_name';
 
@@ -986,6 +985,7 @@
             nacionalities.country_code,
             nacionalities.country_name,
             CONCAT('$imgFolderFlags',nacionalities.country_code,'.svg') AS country_flags
+            $selected
             FROM  $db.players players
             INNER JOIN (
                 SELECT

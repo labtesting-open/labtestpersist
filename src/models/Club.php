@@ -436,7 +436,7 @@
             $category_id = null,
             $division_id = null,
             $club_id = null,
-            $nacionality_code = null, 
+            $nacionality_code_list = null, 
             $orderField = null,
             $orderSense = null
         ){
@@ -475,9 +475,9 @@
             
             $where = "";
 
-            if($nacionality_code != null){
+            if($nacionality_code_list != null){
                 $where.=' WHERE ';                
-                $where.= " nacionalities.country_code = '$nacionality_code'";
+                $where.= " nacionalities.country_code in ($nacionality_code_list) ";
             }           
 
             $order = 'clubs.name';
