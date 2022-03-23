@@ -25,7 +25,7 @@ class SavedSearchTest extends TestCase{
 
         $data = $this->savedSearch->get($user_id, $target, $saved_search_id);
         
-        var_dump($data);
+        //var_dump($data);
 
         $this->assertIsArray($data); 
     }

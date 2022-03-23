@@ -25,7 +25,7 @@ class PlayerTest extends TestCase{
         $category_id = null;
         $division_id = null;
         $club_id = null;
-        $nacionality_code = NULL;
+        $nacionality_code_list = "'AR','IT'";
         $orderField = 'nacionalities.country_code';
         $orderSense = 'ASC';
 
@@ -35,7 +35,7 @@ class PlayerTest extends TestCase{
             $category_id,
             $division_id,
             $club_id,
-            $nacionality_code,
+            $nacionality_code_list,
             $orderField,
             $orderSense
         );
@@ -90,7 +90,7 @@ class PlayerTest extends TestCase{
         $category_id = 1;
         $division_id = 1;
         $club_id = 1;
-        $nationality_code = null;
+        $nationality_code_list = "'AR','IT'";
         $position_id = 4;
         $second_positions_codes = null;
         $age_range = null;
@@ -110,7 +110,7 @@ class PlayerTest extends TestCase{
             $category_id,
             $division_id,
             $club_id,
-            $nationality_code,
+            $nationality_code_list,
             $position_id,
             $second_positions_codes,
             $age_range,

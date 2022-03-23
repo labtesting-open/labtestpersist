@@ -1253,7 +1253,7 @@
             $category_id = null,
             $division_id = null,
             $club_id = null,
-            $nationality_code = null, 
+            $nationality_code_list = null, 
             $position_id = null,
             $second_positions_codes = null,
             $age_range = null,
@@ -1344,9 +1344,9 @@
 
             $whereNationality = "";
 
-            if($nationality_code != null){
+            if($nationality_code_list != null){
                 $whereNationality.=' WHERE ';                
-                $whereNationality.= " player_nacionality.country_code='$nationality_code'";
+                $whereNationality.= " player_nacionality.country_code in ($nationality_code_list)";
             }
 
             $whereSecondPositions = "";
@@ -1408,7 +1408,7 @@
             $category_id = null,
             $division_id = null,
             $club_id = null,
-            $nationality_code = null, 
+            $nationality_code_list = null, 
             $position_id = null,
             $second_positions_codes = null,
             $age_range = null,
@@ -1432,7 +1432,7 @@
                 $category_id,
                 $division_id,
                 $club_id,
-                $nationality_code, 
+                $nationality_code_list, 
                 $position_id,
                 $second_positions_codes,
                 $age_range,
@@ -1477,7 +1477,7 @@
             $category_id = null,
             $division_id = null,
             $club_id = null,
-            $nationality_code = null, 
+            $nationality_code_list = null, 
             $position_id = null,
             $second_positions_codes = null,
             $age_range = null,
@@ -1500,7 +1500,7 @@
                 $category_id,
                 $division_id,
                 $club_id,
-                $nationality_code, 
+                $nationality_code_list, 
                 $position_id,
                 $second_positions_codes,
                 $age_range,
