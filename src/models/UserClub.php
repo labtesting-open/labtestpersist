@@ -18,7 +18,7 @@
 
             $datos = parent::obtenerDatos($query);           
 
-            return $datos;
+            return (empty($datos))? null: $datos[0];
 
         }      
 
