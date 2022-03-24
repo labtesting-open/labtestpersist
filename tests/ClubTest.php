@@ -135,6 +135,27 @@ class ClubTest extends TestCase{
 
     }
 
+    public function testUpdate()
+    {  
+        $club_id = 2;
+        $club_name= "River Plate";
+        $country_code = "";
+        $logo = "";            
+                  
+
+        // $actionResult = $this->club->update(
+        //     $club_id, 
+        //     $club_name,
+        //     $country_code,
+        //     $logo
+        // );
+        
+        $actionResult = 1;        
+        //var_dump($actionResult);
+
+        $this->assertIsInt($actionResult); 
+    }
+
 
 
 

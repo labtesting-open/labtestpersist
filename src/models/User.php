@@ -54,6 +54,7 @@
             u.surname,
             u.plan_id,
             u.country_code,
+            u.language_code,
             p.name as plan_name,           
             IF( ISNULL(u.img_perfil_url), null,
 				CONCAT('$imgFileUsers',u.img_perfil_url)
@@ -104,6 +105,9 @@
 
             return $datos;
         }
+
+
+        
 
 
 

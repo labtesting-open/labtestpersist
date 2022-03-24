@@ -30,8 +30,7 @@
             SELECT
             clubs.id,
             clubs.name,            
-            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,
-            clubs.stadium,
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,            
             CONCAT(countries.name) AS country_name,
             CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS country_flag,
             COALESCE(players_count, 0) AS plantilla,
@@ -80,8 +79,7 @@
                 SELECT 
                 clubs.id,
                 clubs.name,
-                IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,
-                clubs.stadium,
+                IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,                
                 CONCAT(countries.name) AS country_name,
                 CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS country_flag
                 FROM $db.teams teams
@@ -126,9 +124,7 @@
             SELECT
             clubs.id,
             clubs.name,
-            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo, 
-            clubs.stadium,
-            clubs.since,
+            IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,
             CONCAT(countries.name) AS nacionalities_names,
 			CONCAT('$imgFolderFlag',countries.country_code,'.svg') AS nacionalities_flags
             FROM $db.clubs clubs
@@ -268,9 +264,7 @@
             $query = "
             SELECT
             clubs.id,
-            clubs.name club_name, 
-            clubs.stadium,
-            clubs.since,
+            clubs.name club_name,           
             IF( ISNULL(clubs.logo), null,CONCAT('$imgFolderClub', clubs.logo)) AS logo,             
             CONCAT(countries.name) AS country_name,
             CONCAT('$imgFolderFlags',countries.country_code,'.svg') AS country_flag,
@@ -718,6 +712,44 @@
             $rows = parent::obtenerDatos($query);                    
  
             return intval($rows[0]['totalrows']);
+
+        }
+
+
+        public function update(           
+            $club_id,
+            $club_name = null,
+            $country_code = null,
+            $logo = null
+        )
+        {
+            if(empty($club_id)) return 0;
+
+            if(empty($club_name) && empty($country_code) && empty($logo)) return 0;
+            
+            $db = parent::getDataBase();
+            
+            $where =" WHERE id=$club_id ";
+
+            $set=" name = '$club_name'";
+            
+            if(!empty($country_code))
+            {             
+                $set.= ", country_code='$country_code' ";
+            }
+
+            if(!empty($logo))
+            {             
+                $set.= ", logo='$logo' ";
+            }
+
+            $query="UPDATE $db.clubs            
+            SET $set
+            $where";
+            
+            $verifica = parent::nonQuery($query);
+
+            return ($verifica)? 1 : 0;            
 
         }
 
