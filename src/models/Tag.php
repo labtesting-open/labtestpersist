@@ -32,9 +32,9 @@
             $query="INSERT INTO $db.tag_translate(tag, country_code, name)
             VALUES ('$tag', '$contry_code','$name')";
 
-            $verifica = parent::nonQuery($query);
+            $affected = parent::nonQuery($query);
  
-            return ($verifica)? 1 : 0;           
+            return ($affected === 1)? 1 : 0;           
 
         }
 
@@ -48,7 +48,7 @@
 
             $affected = parent::nonQuery($query);
             
-            return $affected;          
+            return ($affected === 1)? 1 : 0;          
 
        }
 
@@ -63,9 +63,34 @@
             SET name='$name'
             WHERE tag='$tag' and country_code='$contry_code'";
             
-            $verifica = parent::nonQuery($query);
+            $affected = parent::nonQuery($query);
 
-            return ($verifica)? 1 : 0;            
+            return ($affected === 1)? 1 : 0;            
+
+        }
+
+
+        public function addList($json)
+        {           
+
+            $db = parent::getDataBase();
+            
+            $jsonDecoded = json_decode($json);           
+
+            $query="INSERT INTO $db.tag_translate(tag, country_code, name)VALUES";
+
+            foreach ($jsonDecoded as $key =>$value) {
+                $tag = $value->tag;
+                $country_code = $value->language_code;
+                $name = $value->name;
+
+                $query.=($key > 0)?',':'';
+                $query.="('$tag', '$country_code', '$name')";
+            }            
+
+            $affected = parent::nonQuery($query);
+ 
+            return ($affected === 1)? 1 : 0;        
 
         }
 

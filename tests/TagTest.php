@@ -23,7 +23,7 @@ class TagTest extends TestCase{
 
         $data = $this->tag->get($country_code);
         
-        var_dump($data);
+        //var_dump($data);
 
         $this->assertIsArray($data); 
     }
@@ -70,6 +70,37 @@ class TagTest extends TestCase{
         $actionResult = 1;        
 
         $this->assertIsInt($actionResult);
+    }
+
+    public function testAddList(){
+        
+        $json = '[
+            {
+               "tag":"All_continents",
+               "language_code":"ES",
+               "name":"Todos los continentes"
+            },
+            {
+               "tag":"All_continents",
+               "language_code":"GB",
+               "name":"All continents"
+            },
+            {
+               "tag":"All_continents",
+               "language_code":"DE",
+               "name":"Alles continenten"
+            }
+         ]';
+
+
+
+        //$actionResult = $this->tag->addList($json);
+
+        //var_dump($actionResult);
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
     }
 
     
