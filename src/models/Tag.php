@@ -34,7 +34,7 @@
 
             $affected = parent::nonQuery($query);
  
-            return ($affected === 1)? 1 : 0;           
+            return $affected;           
 
         }
 
@@ -48,7 +48,7 @@
 
             $affected = parent::nonQuery($query);
             
-            return ($affected === 1)? 1 : 0;          
+            return $affected;          
 
        }
 
@@ -65,7 +65,7 @@
             
             $affected = parent::nonQuery($query);
 
-            return ($affected === 1)? 1 : 0;            
+            return $affected;           
 
         }
 
@@ -90,7 +90,7 @@
 
             $affected = parent::nonQuery($query);
  
-            return ($affected === 1)? 1 : 0;        
+            return $affected;        
 
         }
 
