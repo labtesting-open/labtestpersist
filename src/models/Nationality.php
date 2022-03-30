@@ -45,7 +45,7 @@
             foreach($listArr as $value)
             {                
                 $query.=($index > 1)?',':'';                
-                $query .= "($player_id, '$value', $index)";
+                $query .= "($player_id, $value, $index)";
                 $index++;
             }           
 
