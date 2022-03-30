@@ -1634,6 +1634,32 @@
             return $effected;           
 
         }
+
+
+        public function getPlayerId(
+            $club_id, 
+            $team_id, 
+            $player_name, 
+            $player_surname
+            ){
+
+            $db = parent::getDataBase(); 
+
+            $query = "
+            SELECT 
+            id AS player_id           
+            FROM $db.players 
+            WHERE club_id=$club_id
+            AND team_id=$team_id
+            AND name='$player_name'
+            AND surname='$player_surname'
+            ORDER BY id DESC
+            limit 1" ;        
+
+            $rows = parent::obtenerDatos($query);    
+
+            return (empty($rows))? 0:$rows[0]['player_id'];
+        }
        
 
 

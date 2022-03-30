@@ -298,6 +298,28 @@ class PlayerTest extends TestCase{
         $this->assertIsInt($actionResult);
 
     }
+
+
+    public function testGetPlayerId()
+    { 
+        $club_id = 1;
+        $team_id = 1;
+        $player_name = 'Luca';
+        $player_surname = 'Piñ';       
+
+        $player_id = $this->player->getPlayerId(
+            $club_id,
+            $team_id, 
+            $player_name,
+            $player_surname   
+        );
+
+        //var_dump($player_id);
+               
+
+        $this->assertIsInt($player_id);
+
+    }
     
 
 }
