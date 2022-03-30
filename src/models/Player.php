@@ -1552,6 +1552,88 @@
  
             return $datos;
         }
+
+
+        public function add(
+            $club_id,
+            $team_id, 
+            $player_name,
+            $player_surname,           
+            $position_id,
+            $birthdate,
+            $height = null,
+            $weight = null,
+            $foot_code = null,
+            $jersey_nro = null,
+            $map_position = null,            
+            $img_profile = null
+        )
+        {
+            $db = parent::getDataBase();            
+
+            $queryFields="INSERT INTO $db.players(
+                name
+                ,surname
+                ,position_id
+                ,birthdate
+                ,club_id
+                ,team_id
+                ,active";
+
+            $queryValues = "VALUES(
+                '$player_name'
+                ,'$player_surname'
+                ,$position_id
+                ,'$birthdate'
+                ,$club_id
+                ,$team_id                
+                ,1";                                
+            
+            if(!empty($height))
+            {
+                $queryFields.=", height";
+                $queryValues.=", $height";
+            }
+
+            if(!empty($weight))
+            {
+                $queryFields.=", weight";
+                $queryValues.=", $weight";
+            }
+
+            if(!empty($foot_code))
+            {
+                $queryFields.=", foot_code";
+                $queryValues.=", $foot_code";
+            }
+
+            if(!empty($jersey_nro))
+            {
+                $queryFields.=", jersey_nro";
+                $queryValues.=", $jersey_nro";
+            }
+
+            if(!empty($map_position))
+            {
+                $queryFields.=", map_position";
+                $queryValues.=", '$map_position'";
+            }
+            
+            if(!empty($img_profile)){
+                $queryFields.=", img_profile";
+                $queryValues.= ", '$img_profile'";                
+            }
+
+            $queryFields.=')';
+            $queryValues.=')';
+            
+            $query = $queryFields.$queryValues;
+
+            $effected = parent::nonQuery($query);
+ 
+            return $effected;           
+
+        }
        
 
 

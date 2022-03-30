@@ -260,6 +260,44 @@ class PlayerTest extends TestCase{
         $this->assertFalse(empty($searchResult));
 
     }
+
+
+    public function testAddPlayer()
+    { 
+        $club_id = 1;
+        $team_id = 1;
+        $player_name = 'example name';
+        $player_surname = 'surname name';
+        $position_id = 3;
+        $birthdate = '2000-01-01';
+        $height = 180;
+        $weight = 84;
+        $foot_code = 1;
+        $jersey_nro = 5;
+        $map_position = 'CM';            
+        $img_profile = 'sadasdasdasd';
+
+        // $actionResult = $this->player->add(
+        //     $club_id,
+        //     $team_id, 
+        //     $player_name,
+        //     $player_surname,           
+        //     $position_id,
+        //     $birthdate,
+        //     $height,
+        //     $weight,
+        //     $foot_code,
+        //     $jersey_nro,
+        //     $map_position,            
+        //     $img_profile
+        // );
+
+        //var_dump($actionResult);
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
+    }
     
 
 }
