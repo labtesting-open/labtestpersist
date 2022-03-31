@@ -1660,6 +1660,151 @@
 
             return (empty($rows))? 0:$rows[0]['player_id'];
         }
+
+
+        public function update(
+            $player_id,           
+            $player_name,
+            $player_surname,           
+            $position_id,
+            $birthdate,
+            $height = null,
+            $weight = null,
+            $foot_code = null,
+            $jersey_nro = null,
+            $map_position = null,            
+            $img_profile = null
+        )
+        {
+            $db = parent::getDataBase();            
+
+            $query="UPDATE $db.players SET ";  
+
+            $query .= " name='$player_name'";                     
+            
+            if(!empty($player_surname))
+            {
+                $query .= ", surname='$player_surname'";  
+            }
+
+            if(!empty($position_id))
+            {
+                $query .= ", position_id=$position_id";  
+            }
+            
+            if(!empty($birthdate))
+            {
+                $query .= ", birthdate='$birthdate'";  
+            }
+            
+            if(!empty($height))
+            {
+                $query .= ", height=$height";  
+            }
+
+            if(!empty($weight))
+            {
+                $query .= ", weight=$weight";
+            }
+
+            if(!empty($foot_code))
+            {
+                $query .= ", foot_code=$foot_code";
+            }
+
+            if(!empty($jersey_nro))
+            {
+                $query .= ", jersey_nro=$jersey_nro";
+            }
+
+            if(!empty($map_position))
+            {
+                $query .= ", map_position='$map_position'";
+            }
+            
+            if(!empty($img_profile)){               
+                $query .= ", img_profile='$img_profile'";                
+            }           
+            
+            $query .= " WHERE id=$player_id";
+
+            $effected = parent::nonQuery($query);
+ 
+            return $effected;           
+
+        }
+
+
+        public function getNumberOfMatchesPlayed($player_id)
+        {
+            $db = parent::getDataBase(); 
+
+            $query = "SELECT count(*) as match_actions
+            FROM $db.match_actions
+            where player_id = $player_id" ;        
+
+            $rows = parent::obtenerDatos($query);           
+
+            return (int)$rows[0]['match_actions'];
+        }
+
+
+        public function deleteAllPlayersInjuries($player_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE FROM  $db.players_injuries            
+            WHERE player_id=$player_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;     
+        }
+
+        public function deleteAllPlayersSocialMedia($player_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE FROM $db.player_social_media           
+            WHERE player_id=$player_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;     
+        }
+       
+
+        public function deleteAllPlayersMapPositionSecondary($player_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE FROM  $db.player_map_position_secondary            
+            WHERE player_id=$player_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;     
+        }
+
+
+        public function deleteImages($player_id)
+        {   
+ 
+            return 0;     
+        }
+
+
+        public function delete($player_id)
+        {
+            $db = parent::getDataBase();            
+
+            $query="DELETE FROM  $db.players            
+            WHERE id=$player_id";                   
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;     
+        }
        
 
 

@@ -29,10 +29,23 @@ class NationalityTest extends TestCase{
 
     public function testAdd(){
         
-        $player_id = 140;
+        $player_id = 109;
         $nationalitiesPlayerList = "'ES','IT'";       
 
         //$actionResult = $this->nationality->add($player_id, $nationalitiesPlayerList);
+
+        //var_dump($actionResult);
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
+    }    
+
+    public function testDelete(){
+        
+        $player_id = 140;              
+
+        //$actionResult = $this->nationality->delete($player_id);
 
         //var_dump($actionResult);
         $actionResult = 1;        

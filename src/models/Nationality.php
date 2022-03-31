@@ -55,6 +55,20 @@
 
         }
 
+        public function delete($player_id)
+        {
+            if(empty($player_id)) return -1;
+
+            $db = parent::getDataBase();
+
+            $query="DELETE FROM $db.players_nacionalities WHERE player_id=$player_id";                       
+
+            $affected = parent::nonQuery($query);
+ 
+            return $affected;
+
+        }
+
 
 
 

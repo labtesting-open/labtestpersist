@@ -320,6 +320,109 @@ class PlayerTest extends TestCase{
         $this->assertIsInt($player_id);
 
     }
+
+
+    public function testUpdatePlayer()
+    {   
+        $player_id = 109;
+        $player_name = 'example name';
+        $player_surname = 'surname name';
+        $position_id = 3;
+        $birthdate = '2000-01-01';
+        $height = 180;
+        $weight = 84;
+        $foot_code = 1;
+        $jersey_nro = 5;
+        $map_position = 'CM';            
+        $img_profile = 'sadasdasdasd';
+
+
+        // $actionResult = $this->player->update(
+        //     $player_id,         
+        //     $player_name,
+        //     $player_surname,           
+        //     $position_id,
+        //     $birthdate,
+        //     $height,
+        //     $weight,
+        //     $foot_code,
+        //     $jersey_nro,
+        //     $map_position,            
+        //     $img_profile
+        // );
+
+        //var_dump($actionResult);
+        $actionResult = 1;        
+
+        $this->assertIsInt($actionResult);
+
+    }
+
+    public function testGetNumberOfMatchesPlayed()
+    {
+        $player_id = 1;
+
+        $matchesPlayer = $this->player->getNumberOfMatchesPlayed($player_id);
+
+        //var_dump($matchesPlayer);
+
+        $this->assertIsInt($matchesPlayer);
+    }
+
+    public function testDeleteAllPlayersInjuries()
+    {
+        $player_id = 109;
+
+        //$affected = $this->player->deleteAllPlayersInjuries($player_id);
+
+        $affected = 0;
+
+        //var_dump($affected);
+
+        $this->assertIsInt($affected);
+    }
+
+
+    public function testDeleteAllPlayersMapPositionSecondary()
+    {
+        $player_id = 109;
+
+        //$affected = $this->player->deleteAllPlayersMapPositionSecondary($player_id);
+
+        $affected = 0;
+        
+        var_dump($affected);
+
+        $this->assertIsInt($affected);
+    }
+
+
+    public function testDeleteImages()
+    {
+        $player_id = 109;
+
+        $affected = $this->player->deleteImages($player_id);
+
+        //$affected = 0;
+        
+        //var_dump($affected);
+
+        $this->assertIsInt($affected);
+    }
+
+
+    public function testDelete()
+    {
+        $player_id = 109;
+
+        //$affected = $this->player->delete($player_id);
+
+        $affected = 0;
+        
+        //var_dump($affected);
+
+        $this->assertIsInt($affected);
+    }
     
 
 }
