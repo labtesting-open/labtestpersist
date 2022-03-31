@@ -324,14 +324,14 @@ class PlayerTest extends TestCase{
 
     public function testUpdatePlayer()
     {   
-        $player_id = 109;
+        $player_id = 123;
         $player_name = 'example name';
         $player_surname = 'surname name';
         $position_id = 3;
         $birthdate = '2000-01-01';
         $height = 180;
         $weight = 84;
-        $foot_code = 1;
+        $foot_code = 0;
         $jersey_nro = 5;
         $map_position = 'CM';            
         $img_profile = 'sadasdasdasd';

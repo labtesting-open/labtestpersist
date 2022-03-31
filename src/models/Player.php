@@ -1589,25 +1589,25 @@
                 ,$team_id                
                 ,1";                                
             
-            if(!empty($height))
+            if(!is_null($height))
             {
                 $queryFields.=", height";
                 $queryValues.=", $height";
             }
 
-            if(!empty($weight))
+            if(!is_null($weight))
             {
                 $queryFields.=", weight";
                 $queryValues.=", $weight";
             }
 
-            if(!empty($foot_code))
+            if(!is_null($foot_code))
             {
                 $queryFields.=", foot_code";
                 $queryValues.=", $foot_code";
             }
 
-            if(!empty($jersey_nro))
+            if(!is_null($jersey_nro))
             {
                 $queryFields.=", jersey_nro";
                 $queryValues.=", $jersey_nro";
@@ -1687,7 +1687,7 @@
                 $query .= ", surname='$player_surname'";  
             }
 
-            if(!empty($position_id))
+            if(!is_null($position_id))
             {
                 $query .= ", position_id=$position_id";  
             }
@@ -1697,22 +1697,22 @@
                 $query .= ", birthdate='$birthdate'";  
             }
             
-            if(!empty($height))
+            if(!is_null($height))
             {
                 $query .= ", height=$height";  
             }
 
-            if(!empty($weight))
+            if(!is_null($weight))
             {
                 $query .= ", weight=$weight";
             }
 
-            if(!empty($foot_code))
+            if(!is_null($foot_code))
             {
                 $query .= ", foot_code=$foot_code";
             }
 
-            if(!empty($jersey_nro))
+            if(!is_null($jersey_nro))
             {
                 $query .= ", jersey_nro=$jersey_nro";
             }
