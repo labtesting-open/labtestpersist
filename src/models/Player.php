@@ -749,6 +749,7 @@
                 ELSE 'R'
             END AS foot,
             ft.name AS 'main_foot',
+            pl.foot_code,
             pl.map_position AS map_main_position,     
             map_position_translate.name AS map_main_position_name,
             colorposition.color_hexa
